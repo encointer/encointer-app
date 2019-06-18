@@ -1,0 +1,231 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta2] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a6712b2393d279bdc050cf9f82fb4a07/AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/838af65d6b3b7615b258e02bebf76172/AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:2:1-11:12
+MERGED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:17:1-29:12
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/9e65c95713bd19f968d8ea8111d2bf0e/AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:17:1-28:12
+MERGED from [com.android.support:support-v4:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/47090e5e943f5c3ae20c55e6f27bb52f/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:recyclerview-v7:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/841410c21af5fae56ec7bf35c8720ed2/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/626764a7bedd4ed48b8d61750cbee076/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/bc00c245266e1acb3b0f6acca57034ef/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/50534e1fb890d82127b69b5fdda2384b/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/3c52a3ac0ba04d951e17551c483bebc3/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/1127c8f3cf3dcb2d0cba0c6290fad9d0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-media-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/cc975f49bcbe5241a8505e5d3915b205/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:loader:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/444661df2cec410fecd99a214fd6f17d/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:viewpager:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6401f556d7a9fc7756fc2a3fe10beaf0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b4f603801e57580531a8cd63d6bb3c34/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0505a3a9b4b2053e83fa58c446f2b3f3/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6ec55f2c99b9c58bce49f04cb5da4831/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:customview:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/23347ac8c5d8ede1bddcb840c155a07a/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/dd2344ff957b95280bc1117c2a84b009/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/14822989e7c4c0c4b5f498f6fb06fd6d/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0840ee67b03e0a6cfe350608524176bb/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/01a07811a616b6e9054a85cf2794827a/AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b2ed2ec0220d3ffcd41cc1783a5560f/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8d6705ac0ae7e457859c7582c236cde0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:documentfile:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6c82cbd3d7bc3e35ceb961054328b0d/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/e18aed5eeace0fea4f6691369f47f50a/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:print:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6c25ca741416a0d21635107b7e876fc3/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/e2e398a8d0879c7cbf042d730c8c0273/AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:interpolator:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a964a52ac4da43d45ea2f44b2e402e1f/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/17d43f4977d6a51a91cd7a62d81ed5bd/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/736e7d187551634a419b5132b239f09e/AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/3769d5355c44a6be1c53b2644f33a657/AndroidManifest.xml:17:1-22:12
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+	package
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:4:5-35
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.BLUETOOTH
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:7:5-68
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:7:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:8:5-74
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:8:22-71
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:9:5-76
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:9:22-73
+uses-permission#android.permission.CHANGE_WIFI_STATE
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:10:5-76
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:10:22-73
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:11:5-81
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:11:22-78
+application
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:14:5-30:19
+MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta2] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a6712b2393d279bdc050cf9f82fb4a07/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta2] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a6712b2393d279bdc050cf9f82fb4a07/AndroidManifest.xml:9:5-20
+MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:9:5-20
+MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:9:5-20
+MERGED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:22:5-27:19
+MERGED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:22:5-27:19
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/9e65c95713bd19f968d8ea8111d2bf0e/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/9e65c95713bd19f968d8ea8111d2bf0e/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:22:5-26:19
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:support-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0840ee67b03e0a6cfe350608524176bb/AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:support-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0840ee67b03e0a6cfe350608524176bb/AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/01a07811a616b6e9054a85cf2794827a/AndroidManifest.xml:22:5-23:19
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/01a07811a616b6e9054a85cf2794827a/AndroidManifest.xml:22:5-23:19
+	android:appComponentFactory
+		ADDED from [com.android.support:support-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0840ee67b03e0a6cfe350608524176bb/AndroidManifest.xml:22:18-91
+	android:supportsRtl
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:19:9-35
+	android:label
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:17:9-41
+	android:roundIcon
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:18:9-54
+	android:icon
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:16:9-43
+	android:allowBackup
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:15:9-35
+	android:theme
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:20:9-40
+activity#com.encointer.signer.DeviceList
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:21:9-77
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:21:19-65
+activity#com.encointer.signer.PersonCounter
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:22:9-71
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:22:19-68
+activity#com.encointer.signer.EncointerActivity
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:23:9-29:20
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:23:19-72
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:24:13-28:29
+action#android.intent.action.MAIN
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:25:17-69
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:25:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:27:17-77
+	android:name
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:27:27-74
+uses-sdk
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta2] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a6712b2393d279bdc050cf9f82fb4a07/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta2] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a6712b2393d279bdc050cf9f82fb4a07/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/838af65d6b3b7615b258e02bebf76172/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/838af65d6b3b7615b258e02bebf76172/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/9e65c95713bd19f968d8ea8111d2bf0e/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/9e65c95713bd19f968d8ea8111d2bf0e/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/47090e5e943f5c3ae20c55e6f27bb52f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/47090e5e943f5c3ae20c55e6f27bb52f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/841410c21af5fae56ec7bf35c8720ed2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:recyclerview-v7:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/841410c21af5fae56ec7bf35c8720ed2/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/626764a7bedd4ed48b8d61750cbee076/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/626764a7bedd4ed48b8d61750cbee076/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/bc00c245266e1acb3b0f6acca57034ef/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/bc00c245266e1acb3b0f6acca57034ef/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/50534e1fb890d82127b69b5fdda2384b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/50534e1fb890d82127b69b5fdda2384b/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/3c52a3ac0ba04d951e17551c483bebc3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/3c52a3ac0ba04d951e17551c483bebc3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/1127c8f3cf3dcb2d0cba0c6290fad9d0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/1127c8f3cf3dcb2d0cba0c6290fad9d0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/cc975f49bcbe5241a8505e5d3915b205/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/cc975f49bcbe5241a8505e5d3915b205/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/444661df2cec410fecd99a214fd6f17d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/444661df2cec410fecd99a214fd6f17d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6401f556d7a9fc7756fc2a3fe10beaf0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6401f556d7a9fc7756fc2a3fe10beaf0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b4f603801e57580531a8cd63d6bb3c34/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b4f603801e57580531a8cd63d6bb3c34/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0505a3a9b4b2053e83fa58c446f2b3f3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0505a3a9b4b2053e83fa58c446f2b3f3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6ec55f2c99b9c58bce49f04cb5da4831/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6ec55f2c99b9c58bce49f04cb5da4831/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/23347ac8c5d8ede1bddcb840c155a07a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/23347ac8c5d8ede1bddcb840c155a07a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/dd2344ff957b95280bc1117c2a84b009/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/dd2344ff957b95280bc1117c2a84b009/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/14822989e7c4c0c4b5f498f6fb06fd6d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/14822989e7c4c0c4b5f498f6fb06fd6d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0840ee67b03e0a6cfe350608524176bb/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/0840ee67b03e0a6cfe350608524176bb/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/01a07811a616b6e9054a85cf2794827a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/01a07811a616b6e9054a85cf2794827a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b2ed2ec0220d3ffcd41cc1783a5560f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b2ed2ec0220d3ffcd41cc1783a5560f/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8d6705ac0ae7e457859c7582c236cde0/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8d6705ac0ae7e457859c7582c236cde0/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6c82cbd3d7bc3e35ceb961054328b0d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6c82cbd3d7bc3e35ceb961054328b0d/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/e18aed5eeace0fea4f6691369f47f50a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/e18aed5eeace0fea4f6691369f47f50a/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6c25ca741416a0d21635107b7e876fc3/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/6c25ca741416a0d21635107b7e876fc3/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/e2e398a8d0879c7cbf042d730c8c0273/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/e2e398a8d0879c7cbf042d730c8c0273/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a964a52ac4da43d45ea2f44b2e402e1f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/a964a52ac4da43d45ea2f44b2e402e1f/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/17d43f4977d6a51a91cd7a62d81ed5bd/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/17d43f4977d6a51a91cd7a62d81ed5bd/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/736e7d187551634a419b5132b239f09e/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/736e7d187551634a419b5132b239f09e/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/3769d5355c44a6be1c53b2644f33a657/AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/3769d5355c44a6be1c53b2644f33a657/AndroidManifest.xml:20:5-44
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		ADDED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/Noa/Documents/ETH/Master/10_Semester/SemesterarbeitFS2019/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from [com.google.android.gms:play-services-nearby:16.0.0] /Users/Noa/.gradle/caches/transforms-2/files-2.1/8b95e93074afd716957e302ee9f0a0c9/AndroidManifest.xml:7:22-76
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:23:9-26:75
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:25:13-37
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:26:13-72
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/d6bc33f785df75dc020712f3b9d28614/AndroidManifest.xml:24:13-79
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:23:9-25:69
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:25:13-66
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:16.0.1] /Users/Noa/.gradle/caches/transforms-2/files-2.1/b69b942166909badc0c267d555be9c85/AndroidManifest.xml:24:13-58
