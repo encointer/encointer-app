@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">encointer</string>
+    <string name="button_start_ceremony">Start</string>
+    <string name="textView_people_counter">How many People attend the meeting?</string>
+    <string name="hint_people_counter">Number of People</string>
+    <string name="button_people_counter">Confirm</string>
+    <string name="textView_collected_signatures">Signatures collected: ?</string>
+    <string name="hint_username">Username</string>
+    <string name="textView_devices_found">Devices found: ?</string>
+    <string name="button_send_signature">Send Signature</string>
+    <string name="content_description_identicon">Identicon</string>
+</resources>
