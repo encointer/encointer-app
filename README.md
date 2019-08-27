@@ -26,6 +26,10 @@ mobile phone app for encointer ceremonies and wallet
    ar = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-ar"
    linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android26-clang"
    ```
+1. build native library
+   ```
+   ./build-native-libs.sh
+   ```   
 2. In studio, Choose "Open an existing Anroid Studio project"
 3. If needed, sync Gradle file
 4. Build

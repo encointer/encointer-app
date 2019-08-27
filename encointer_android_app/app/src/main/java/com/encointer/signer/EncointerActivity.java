@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -33,7 +34,13 @@ public class EncointerActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.loadLibrary("encointer_api_native");
+        //System.loadLibrary("rust");
+
         setContentView(R.layout.activity_main);
+
+        TextView dummyTextView = findViewById(R.id.dummyTextView);
+        dummyTextView.setText(hello("Rust Library"));
     }
 
     @Override
@@ -69,5 +76,7 @@ public class EncointerActivity extends AppCompatActivity {
         return true;
     }
 
+    // encointer-api-native functions
+    private static native String hello(final String to);
 
 }

@@ -8,8 +8,8 @@
 
     <Button
         android:id="@+id/button_start"
-        android:layout_width="226dp"
-        android:layout_height="0dp"
+        android:layout_width="218dp"
+        android:layout_height="63dp"
         android:layout_marginBottom="102dp"
         android:onClick="startCeremony"
         android:text="@string/button_start_ceremony"
@@ -52,12 +52,20 @@
         android:id="@+id/imageView"
         android:layout_width="253dp"
         android:layout_height="161dp"
-        android:layout_marginTop="119dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="266dp"
         app:layout_constraintBottom_toTopOf="@+id/button_start"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_encointer_logo_final" />
+
+    <TextView
+        android:id="@+id/dummyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="somecowfonque"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="644dp" />
 
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,15 @@
+[package]
+name = "encointer-api-native"
+version = "0.1.0"
+authors = ["Alain Brenzikofer <alain@encointer.org>"]
+edition = "2018"
+
+[dependencies]
+jni = { version = "0.10.2", default-features = false }
+
+[profile.release]
+lto = true
+
+[lib]
+name = "encointer_api_native"
+crate-type = ["cdylib"]
