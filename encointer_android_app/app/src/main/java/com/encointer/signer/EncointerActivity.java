@@ -10,6 +10,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -66,16 +67,16 @@ public class EncointerActivity extends AppCompatActivity {
     }
 
     public void sendExtrinsic(View view) {
+
         EditText editText_url = findViewById(R.id.editText_url);
         String url = editText_url.getText().toString();
 
         if(url.length() == 0) {
             editText_url.setError("Please enter a valid username!");
         } else {
-            String res = send_xt(url);
-            TextView dummyTextView = findViewById(R.id.dummyTextView);
-            dummyTextView.setText(res);
 
+            NativeApiThread p = new NativeApiThread(url);
+            p.start();
         }
 
     }
@@ -91,7 +92,28 @@ public class EncointerActivity extends AppCompatActivity {
         return true;
     }
 
-    // encointer-api-native functions
-    private static native String send_xt(final String to);
+
 
 }
+
+class NativeApiThread extends Thread {
+
+         String url;
+
+         private static final String TAG = "NativeApiThread";
+
+         NativeApiThread(String url) {
+             this.url = url;
+         }
+
+         public void run() {
+             Log.d(TAG, "spawning native call sendxt in new thread");
+             String res = sendxt("192.168.1.4:9944");
+             Log.d(TAG, "native call sendxt has returned");
+
+         }
+
+         // encointer-api-native functions
+         private native String sendxt(String to);
+
+     }

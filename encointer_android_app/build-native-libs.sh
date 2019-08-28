@@ -6,7 +6,7 @@ cargo +nightly build --target i686-linux-android --release
 echo "building for armv7"
 cargo +nightly build --target armv7-linux-androideabi --release
 echo "building for aarch64"
-cargo +nighty build --target aarch64-linux-android --release
+cargo +nightly build --target aarch64-linux-android --release
 
 echo "copying libs to android project"
 JNI_LIBS=../app/src/main/jniLibs
