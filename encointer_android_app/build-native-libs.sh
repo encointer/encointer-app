@@ -2,11 +2,11 @@
 
 cd encointer-api-native
 echo "building for i686"
-cargo build --target i686-linux-android --release
+cargo +nightly build --target i686-linux-android --release
 echo "building for armv7"
-cargo build --target armv7-linux-androideabi --release
+cargo +nightly build --target armv7-linux-androideabi --release
 echo "building for aarch64"
-cargo build --target aarch64-linux-android --release
+cargo +nighty build --target aarch64-linux-android --release
 
 echo "copying libs to android project"
 JNI_LIBS=../app/src/main/jniLibs

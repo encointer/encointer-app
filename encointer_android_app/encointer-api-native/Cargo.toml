@@ -6,6 +6,9 @@ edition = "2018"
 
 [dependencies]
 jni = { version = "0.10.2", default-features = false }
+substrate-api-client = { git = "https://github.com/scs/substrate-api-client.git", tag = "api-M1.1" }
+log = "0.4"
+env_logger = "0.6"
 
 [profile.release]
 lto = true
@@ -13,3 +16,14 @@ lto = true
 [lib]
 name = "encointer_api_native"
 crate-type = ["cdylib"]
+
+[dependencies.codec]
+default-features = false
+package = "parity-scale-codec"
+features = ["derive"]
+version = "1.0.0"
+
+[dependencies.primitives]
+git = 'https://github.com/paritytech/substrate'
+rev = '6d47fd919b4d86e4348c6c19d99c80372587d215'
+package = "substrate-primitives"

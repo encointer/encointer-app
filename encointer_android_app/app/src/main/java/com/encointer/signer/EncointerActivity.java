@@ -39,8 +39,8 @@ public class EncointerActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        TextView dummyTextView = findViewById(R.id.dummyTextView);
-        dummyTextView.setText(hello("Rust Library"));
+        //TextView dummyTextView = findViewById(R.id.dummyTextView);
+        //dummyTextView.setText(hello("Rust Library"));
     }
 
     @Override
@@ -65,6 +65,21 @@ public class EncointerActivity extends AppCompatActivity {
         }
     }
 
+    public void sendExtrinsic(View view) {
+        EditText editText_url = findViewById(R.id.editText_url);
+        String url = editText_url.getText().toString();
+
+        if(url.length() == 0) {
+            editText_url.setError("Please enter a valid username!");
+        } else {
+            String res = send_xt(url);
+            TextView dummyTextView = findViewById(R.id.dummyTextView);
+            dummyTextView.setText(res);
+
+        }
+
+    }
+
     /** Returns true if the app was granted all the permissions. Otherwise, returns false. */
     private static boolean hasPermissions(Context context, String... permissions) {
         for (String permission : permissions) {
@@ -77,6 +92,6 @@ public class EncointerActivity extends AppCompatActivity {
     }
 
     // encointer-api-native functions
-    private static native String hello(final String to);
+    private static native String send_xt(final String to);
 
 }

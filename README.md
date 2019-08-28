@@ -7,10 +7,11 @@ mobile phone app for encointer ceremonies and wallet
 1. install rust toolchain: 
    ```
    curl https://sh.rustup.rs -sSf | sh
+   rustup toolchain install nightly
    ```
 1. add toolchains
    ```
-   rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android
+   rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android --toolchain nigthly
    ```
 1. add the following to `~/.cargo/config`
    ```
@@ -26,6 +27,17 @@ mobile phone app for encointer ceremonies and wallet
    ar = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-ar"
    linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android26-clang"
    ```
+1. fix paths and add symlinks (not sure if linking gcc to clang is legit, but there's no gcc in android anymore)
+   ```
+   export PATH=~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+   cd ~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/
+   ln -s i686-linux-android26-clang i686-linux-android-clang
+   ln -s i686-linux-android26-clang i686-linux-android-gcc
+   ln -s armv7a-linux-androideabi26-clang arm-linux-androideabi-clang
+   ln -s armv7a-linux-androideabi26-clang arm-linux-androideabi-gcc
+
+   ```
+
 1. build native library
    ```
    ./build-native-libs.sh

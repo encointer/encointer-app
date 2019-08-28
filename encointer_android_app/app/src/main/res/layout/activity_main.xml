@@ -10,14 +10,14 @@
         android:id="@+id/button_start"
         android:layout_width="218dp"
         android:layout_height="63dp"
-        android:layout_marginBottom="102dp"
         android:onClick="startCeremony"
         android:text="@string/button_start_ceremony"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        tools:text="start meetup" />
 
     <EditText
         android:id="@+id/editText_username"
@@ -30,7 +30,8 @@
         app:layout_constraintBottom_toTopOf="@+id/button_start"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_bias="0.927" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -65,7 +66,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="somecowfonque"
-        tools:layout_editor_absoluteX="176dp"
-        tools:layout_editor_absoluteY="644dp" />
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="685dp" />
+
+    <Button
+        android:id="@+id/button_send"
+        android:layout_width="198dp"
+        android:layout_height="46dp"
+        android:text="send tx"
+        android:onClick="sendExtrinsic"
+        tools:layout_editor_absoluteX="106dp"
+        tools:layout_editor_absoluteY="414dp" />
+
+    <EditText
+        android:id="@+id/editText_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="192.168.1.4:8546"
+        tools:layout_editor_absoluteX="97dp"
+        tools:layout_editor_absoluteY="329dp" />
 
 </android.support.constraint.ConstraintLayout>
