@@ -1,5 +1,4 @@
 #!/bin/sh
-
 cd encointer-api-native
 echo "building for i686"
 cargo +nightly build --target i686-linux-android --release

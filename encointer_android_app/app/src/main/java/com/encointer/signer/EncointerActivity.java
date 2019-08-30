@@ -108,7 +108,7 @@ class NativeApiThread extends Thread {
 
          public void run() {
              Log.d(TAG, "spawning native call sendxt in new thread");
-             String res = sendxt("192.168.1.4:9944");
+             String res = sendxt(this.url);
              Log.d(TAG, "native call sendxt has returned");
 
          }

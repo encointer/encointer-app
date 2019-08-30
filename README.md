@@ -1,7 +1,7 @@
 # encointer-app
 mobile phone app for encointer ceremonies and wallet
 
-# Build Instructions
+## Build Instructions
 1. Install [Android Studio](https://developer.android.com/studio) (We will assume the SDK is installed to `~/Android/Sdk`)
 1. Install NDK from Tools -> SDK Manager -> Tab: SDK Tools -> NDK (we will assume the NDK is installed to `~/Android/Sdk/ndk`)
 1. install rust toolchain: 
@@ -31,17 +31,16 @@ mobile phone app for encointer ceremonies and wallet
    ```
    export PATH=~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
    cd ~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/
-   ln -s i686-linux-android26-clang i686-linux-android-clang
-   ln -s i686-linux-android26-clang i686-linux-android-gcc
-   ln -s armv7a-linux-androideabi26-clang arm-linux-androideabi-clang
-   ln -s aarch64-linux-android26-clang aarch64-linux-android-clang
+   ln -s i686-linux-android16-clang i686-linux-android-clang
+   ln -s armv7a-linux-androideabi16-clang arm-linux-androideabi-clang
+   ln -s aarch64-linux-android21-clang aarch64-linux-android-clang
 
    ```
    a. if you have trouble building in the next step because of missing gcc, you might find this additional workaround useful. (not sure if linking gcc to clang is legit, but there's no gcc in android anymore and the two are highly compatible)
       ```
-      ln -s i686-linux-android26-clang i686-linux-android-gcc
-      ln -s armv7a-linux-androideabi26-clang arm-linux-androideabi-gcc
-      ln -s aarch64-linux-android26-clang aarch64-linux-android-gcc
+      ln -s i686-linux-android16-clang i686-linux-android-gcc
+      ln -s armv7a-linux-androideabi16-clang arm-linux-androideabi-gcc
+      ln -s aarch64-linux-android21-clang aarch64-linux-android-gcc
       ```
 
 1. build native library
@@ -54,6 +53,17 @@ mobile phone app for encointer ceremonies and wallet
 1. Run on Android device (simulator does not work with Android Nearby)
 
 
+## Demo
+### run node
+Somewhere in your local WiFi accessible network, run
+```
+substrate --dev --ws-external
+```
+We'll assume your node's IP is 192.168.1.4
 
-# Android Studio
+### send extrinsic from app
+...TODO
+
+
+## Android Studio
 Version: 3.4

@@ -52,9 +52,12 @@ pub unsafe extern fn Java_com_encointer_signer_NativeApiThread_sendxt(env: JNIEn
     );
     info!("called into native sendxt");
 
+    info!("connecting to {}", url.clone().into_string().unwrap());
+
+
     // initialize api and set the signer (sender) that is used to sign the extrinsics
     let from = AccountKey::new("//Alice", Some(""), CryptoKind::Sr25519);
-    let api = Api::new(format!("ws://{:?}", url))
+    let api = Api::new(format!("ws://{}", url.into_string().unwrap()))
         .set_signer(from);
 
     info!("[+] Alice's Account Nonce is {}\n", api.get_nonce().unwrap());
