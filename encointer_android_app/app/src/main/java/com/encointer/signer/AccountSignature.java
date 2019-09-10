@@ -2,7 +2,8 @@ package com.encointer.signer;
 
 import java.io.Serializable;
 import java.security.PublicKey;
-import java.time.LocalDateTime;
+import org.threeten.bp.LocalDateTime;
+
 
 public class AccountSignature implements Serializable {
 

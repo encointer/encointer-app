@@ -27,6 +27,7 @@ import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.PayloadCallback;
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 import com.google.android.gms.nearby.connection.Strategy;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -45,7 +46,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.RSAKeyGenParameterSpec;
-import java.time.LocalDateTime;
+//import java.time.LocalDateTime;
+import org.threeten.bp.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -186,6 +188,7 @@ public class DeviceList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(this);
         setContentView(R.layout.activity_device_list);
 
         // Get the Intent that started this activity and extract the string

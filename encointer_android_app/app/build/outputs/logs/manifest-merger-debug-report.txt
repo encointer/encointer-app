@@ -12,6 +12,7 @@ MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /home/brenzi/.gr
 MERGED from [com.google.android.gms:play-services-basement:16.0.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/18c6ca0e9127e45469c1d04a4796b4b0/play-services-basement-16.0.1/AndroidManifest.xml:17:1-28:12
 MERGED from [com.android.support:support-v4:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/69ee415b12564ec70670df83c9fdfa6f/support-v4-28.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:recyclerview-v7:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/967e8d778145ef395ac0dc868ec88b33/recyclerview-v7-28.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [com.jakewharton.threetenabp:threetenabp:1.2.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/651002bf699c3a942379b5276f85c86d/threetenabp-1.2.1/AndroidManifest.xml:2:1-9:12
 MERGED from [com.android.support:support-fragment:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/59df75d251431efe4d450d41cc6b083b/support-fragment-28.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:animated-vector-drawable:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/45d50504f4c11c4f549bb8efafb39de8/animated-vector-drawable-28.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-core-ui:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/ee7de4c472f1da0a0213606950b8c4e7/support-core-ui-28.0.0/AndroidManifest.xml:17:1-22:12
@@ -87,6 +88,8 @@ MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /home/brenzi/.gr
 MERGED from [com.google.android.gms:play-services-tasks:16.0.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/c2493444a7e740731cbcda53fccdf89a/play-services-tasks-16.0.1/AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-basement:16.0.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/18c6ca0e9127e45469c1d04a4796b4b0/play-services-basement-16.0.1/AndroidManifest.xml:22:5-26:19
 MERGED from [com.google.android.gms:play-services-basement:16.0.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/18c6ca0e9127e45469c1d04a4796b4b0/play-services-basement-16.0.1/AndroidManifest.xml:22:5-26:19
+MERGED from [com.jakewharton.threetenabp:threetenabp:1.2.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/651002bf699c3a942379b5276f85c86d/threetenabp-1.2.1/AndroidManifest.xml:7:5-20
+MERGED from [com.jakewharton.threetenabp:threetenabp:1.2.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/651002bf699c3a942379b5276f85c86d/threetenabp-1.2.1/AndroidManifest.xml:7:5-20
 MERGED from [com.android.support:support-compat:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/dd1cf78f22bdd94f550130b281f27c97/support-compat-28.0.0/AndroidManifest.xml:22:5-94
 MERGED from [com.android.support:support-compat:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/dd1cf78f22bdd94f550130b281f27c97/support-compat-28.0.0/AndroidManifest.xml:22:5-94
 MERGED from [com.android.support:versionedparcelable:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/8bb2478d12c0baf5b421024800cd7dbb/versionedparcelable-28.0.0/AndroidManifest.xml:22:5-23:19
@@ -147,6 +150,8 @@ MERGED from [com.android.support:support-v4:28.0.0] /home/brenzi/.gradle/caches/
 MERGED from [com.android.support:support-v4:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/69ee415b12564ec70670df83c9fdfa6f/support-v4-28.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:recyclerview-v7:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/967e8d778145ef395ac0dc868ec88b33/recyclerview-v7-28.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:recyclerview-v7:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/967e8d778145ef395ac0dc868ec88b33/recyclerview-v7-28.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.jakewharton.threetenabp:threetenabp:1.2.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/651002bf699c3a942379b5276f85c86d/threetenabp-1.2.1/AndroidManifest.xml:5:5-44
+MERGED from [com.jakewharton.threetenabp:threetenabp:1.2.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/651002bf699c3a942379b5276f85c86d/threetenabp-1.2.1/AndroidManifest.xml:5:5-44
 MERGED from [com.android.support:support-fragment:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/59df75d251431efe4d450d41cc6b083b/support-fragment-28.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-fragment:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/59df75d251431efe4d450d41cc6b083b/support-fragment-28.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:animated-vector-drawable:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/45d50504f4c11c4f549bb8efafb39de8/animated-vector-drawable-28.0.0/AndroidManifest.xml:20:5-44

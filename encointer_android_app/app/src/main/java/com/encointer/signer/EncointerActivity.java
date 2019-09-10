@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class EncointerActivity extends AppCompatActivity {
 
@@ -35,6 +36,7 @@ public class EncointerActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(this);
         System.loadLibrary("encointer_api_native");
         //System.loadLibrary("rust");
 
