@@ -34,7 +34,7 @@ use substrate_api_client::{
 
 use log::Level;
 use android_logger::Config;
-
+use oping::{Ping, PingResult};
 
 
 #[no_mangle]
@@ -52,10 +52,24 @@ pub unsafe extern fn Java_com_encointer_signer_NativeApiThread_sendxt(env: JNIEn
     );
     info!("called into native sendxt");
 
+    // first a ping to check networking
+    /*
+    let mut ping = Ping::new();
+    ping.set_timeout(5.0).expect("set_timeout");  // timeout of 5.0 seconds
+    ping.add_host("localhost").expect("add localhost ping");  // fails here if socket can't be created
+    ping.add_host("192.168.1.36").expect("add .36 ping");
+    let responses = ping.send().expect("send pings");
+    for resp in responses {
+        if resp.dropped > 0 {
+            println!("No response from host: {}", resp.hostname);
+        } else {
+            println!("Response from host {} (address {}): latency {} ms",
+                resp.hostname, resp.address, resp.latency_ms);
+            println!("    all details: {:?}", resp);
+        }
+    }
 
-
-
-
+*/
 
     info!("connecting to {}", url.clone().into_string().unwrap());
     // initialize api and set the signer (sender) that is used to sign the extrinsics
