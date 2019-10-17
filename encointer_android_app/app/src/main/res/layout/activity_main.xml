@@ -88,11 +88,20 @@
         android:layout_height="wrap_content"
         android:ems="13"
         android:inputType="textPersonName"
-        android:text="192.168.1.36:9944"
+        android:text="url"
         app:layout_constraintBottom_toTopOf="@+id/button_send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_start" />
+
+    <TextView
+        android:id="@+id/block_number"
+        android:layout_width="388dp"
+        android:layout_height="28dp"
+        android:text="block number: "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dummyTextView" />
 
 </android.support.constraint.ConstraintLayout>
