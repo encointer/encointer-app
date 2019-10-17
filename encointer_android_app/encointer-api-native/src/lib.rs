@@ -19,6 +19,8 @@ extern crate jni;
 extern crate substrate_api_client;
 #[macro_use] extern crate log;
 extern crate android_logger;
+#[macro_use] extern crate json;
+
 
 use std::ffi::{CString, CStr};
 use jni::JNIEnv;
@@ -30,11 +32,49 @@ use substrate_api_client::{
     compose_extrinsic,
     crypto::{AccountKey, CryptoKind},
     extrinsic,
+    rpc::json_req,
+    utils::storage_key_hash,
 };
-
+use codec::{Encode, Decode};
+use primitives::{
+	crypto::{set_default_ss58_version, Ss58AddressFormat, Ss58Codec},
+	ed25519, sr25519, Pair, Public, H256, hexdisplay::HexDisplay,
+};
+use bip39::{Mnemonic, Language, MnemonicType};
 use log::Level;
 use android_logger::Config;
 use oping::{Ping, PingResult};
+
+#[no_mangle]
+pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newAccount(env: JNIEnv, _: JObject) -> jstring {
+ 
+    android_logger::init_once(
+        Config::default()
+            .with_min_level(Level::Trace) // limit log level
+            .with_tag("encointer-api-native") // logs will show under mytag tag
+    );
+    info!("called into native newaccount");
+    let mnemonic = Mnemonic::new(MnemonicType::Words12, Language::English);
+    info!("newaccount phrase: {}", mnemonic.phrase());
+    let newpair = sr25519::Pair::from_phrase(mnemonic.phrase(), None);
+    info!("newaccount address (ss58): {}", newpair.public().to_ss58check());
+    let outputjson = object!{
+        "phrase" => mnemonic.phrase(),
+        "address" => newpair.public().to_ss58check(),
+        "pair" => hex::encode(&newpair.encode())
+    };
+    let output = env.new_string(outputjson).unwrap();
+    output.into_inner()
+}
+
+#[no_mangle]
+pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReqSubscribeEvents(env: JNIEnv, _: JObject) -> jstring {
+    let key = storage_key_hash("System", "Events", None);
+    let jsonreq = json_req::state_subscribe_storage(&key).to_string();
+    let output = env.new_string(jsonreq).unwrap();
+    output.into_inner()
+}
+
 
 
 #[no_mangle]
@@ -52,24 +92,6 @@ pub unsafe extern fn Java_com_encointer_signer_NativeApiThread_sendxt(env: JNIEn
     );
     info!("called into native sendxt");
 
-    // first a ping to check networking
-    /*
-    let mut ping = Ping::new();
-    ping.set_timeout(5.0).expect("set_timeout");  // timeout of 5.0 seconds
-    ping.add_host("localhost").expect("add localhost ping");  // fails here if socket can't be created
-    ping.add_host("192.168.1.36").expect("add .36 ping");
-    let responses = ping.send().expect("send pings");
-    for resp in responses {
-        if resp.dropped > 0 {
-            println!("No response from host: {}", resp.hostname);
-        } else {
-            println!("Response from host {} (address {}): latency {} ms",
-                resp.hostname, resp.address, resp.latency_ms);
-            println!("    all details: {:?}", resp);
-        }
-    }
-
-*/
 
     info!("connecting to {}", url.clone().into_string().unwrap());
     // initialize api and set the signer (sender) that is used to sign the extrinsics
