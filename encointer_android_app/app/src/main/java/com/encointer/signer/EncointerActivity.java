@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.neovisionaries.ws.client.*;
 import android.util.Log;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.math.BigInteger;
 import java.io.IOException;
@@ -42,6 +44,8 @@ public class EncointerActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
     WebSocket ws = null;
+    String account_address = null;
+    String account_pair = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,9 +65,21 @@ public class EncointerActivity extends AppCompatActivity {
         String node_ws_url = sharedPref.getString("node_ws_url", "wss://poc3-rpc.polkadot.io/");
         editText_url.setText(node_ws_url);
 
-        //TextView dummyTextView = findViewById(R.id.dummyTextView);
-        //dummyTextView.setText(hello("Rust Library"));
-
+        if (sharedPref.contains("account") == false) {
+            Log.i(TAG, "no previously used account found. generating a new one");
+            sharedPref.edit().putString("account", "{\"phrase\": \"one two three\", \"address\": \"f5zhsAEDc\", \"pair\": \"0x1234\"}").apply();
+            //sharedPref.edit().putString("account", newAccount()).apply();
+        }
+        try {
+            JSONObject jsonObj = new JSONObject(sharedPref.getString("account", "error_no_account_found"));
+            account_address = jsonObj.getString("address");
+            account_pair = jsonObj.getString("pair");
+            TextView TextView_account_address = findViewById(R.id.account_address);
+            TextView_account_address.setText(account_address);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         // Create a WebSocket factory and set 5000 milliseconds as a timeout
         // value for socket connection.
         WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(5000);
@@ -78,13 +94,32 @@ public class EncointerActivity extends AppCompatActivity {
                     Log.i(TAG, "onTextMessage: " + message);
                     try {
                         JSONObject jsonObj = new JSONObject(message);
-                        String blockNrHex = jsonObj.getJSONObject("params")
-                                .getJSONObject("result")
-                                .getString("number");
-                        BigInteger block_nr = new BigInteger(blockNrHex.substring("0x".length()), 16);
-                        TextView tv_block_number = findViewById(R.id.block_number);
-                        tv_block_number.setText(String.format("latest block number is %d", block_nr));
-                        Log.i(TAG, String.format("latest block number is %s / %d", blockNrHex, block_nr));
+                        if (jsonObj.has("method")) {
+                            switch (jsonObj.getString("method")) {
+                                case "chain_newHead":
+                                    String blockNrHex = jsonObj.getJSONObject("params")
+                                            .getJSONObject("result")
+                                            .getString("number");
+                                    BigInteger block_nr = new BigInteger(blockNrHex.substring("0x".length()), 16);
+                                    TextView tv_block_number = findViewById(R.id.block_number);
+                                    tv_block_number.setText(String.format("latest block number is %d", block_nr));
+                                    Log.i(TAG, String.format("latest block number is %s / %d", blockNrHex, block_nr));
+                                    break;
+                                case "state_storage":
+                                    JSONArray changes = jsonObj.getJSONObject("params")
+                                            .getJSONObject("result")
+                                            .getJSONArray("changes");
+                                    for (int n = 0; n < changes.length(); n++) {
+                                        if (changes.getJSONArray(n).getString(0)
+                                                .contentEquals("0xcc956bdb7605e3547539f321ac2bc95c")) {
+                                            String events = changes.getJSONArray(n).getString(1);
+                                            Log.i(TAG, "got event update: " + events);
+                                        }
+
+                                    }
+                                    break;
+                            }
+                        }
                     }
                     catch (Exception e) {
                         e.printStackTrace();
@@ -95,7 +130,9 @@ public class EncointerActivity extends AppCompatActivity {
                     Log.i(TAG, "onConnected is executed");
                     Log.i(TAG, "subscribing to Alexander Block updates");
                     websocket.sendText("{\"id\":12,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
-
+                    Log.i(TAG, "subscribing to Events");
+                    websocket.sendText("{\"id\":\"1\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
+                            //getJsonReqSubscribeEvents();
                 }
             });
 
