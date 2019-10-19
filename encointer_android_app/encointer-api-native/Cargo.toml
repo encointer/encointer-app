@@ -21,7 +21,7 @@ lto = true
 
 [lib]
 name = "encointer_api_native"
-crate-type = ["cdylib"]
+#crate-type = ["cdylib"]
 
 [dependencies.codec]
 default-features = false
@@ -33,3 +33,7 @@ version = "1.0.0"
 git = 'https://github.com/paritytech/substrate'
 package = "substrate-primitives"
 
+[dependencies.encointer-node-runtime]
+git = 'https://github.com/encointer/encointer-node'
+branch = "PoC1"
+package = "encointer-node-runtime"
