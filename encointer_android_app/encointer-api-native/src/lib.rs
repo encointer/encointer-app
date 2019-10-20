@@ -26,12 +26,12 @@ use std::ffi::{CString, CStr};
 use jni::JNIEnv;
 use jni::objects::{JObject, JString};
 use jni::sys::{jstring};
-
+use keyring::AccountKeyring;
 use substrate_api_client::{
     Api,
     compose_extrinsic_offline,
-    crypto::{AccountKey, CryptoKind},
-    extrinsic,
+    extrinsic, 
+    extrinsic::xt_primitives::{AccountId, AnySignature as Signature, UncheckedExtrinsicV3},
     rpc::json_req,
     utils::{storage_key_hash, hexstr_to_hash},
 };
@@ -45,7 +45,8 @@ use log::Level;
 use android_logger::Config;
 use oping::{Ping, PingResult};
 
-use encointer_node_runtime::{Call, EncointerCeremoniesCall, Signature,
+use encointer_node_runtime::{Call, EncointerCeremoniesCall, BalancesCall, 
+    Signature, Hash,
     encointer_ceremonies::{ClaimOfAttendance, Witness, CeremonyIndexType,
         MeetupIndexType}
 }; 
@@ -61,14 +62,13 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newAccount(env:
     info!("called into native newaccount");
     let mnemonic = Mnemonic::new(MnemonicType::Words12, Language::English);
     info!("newaccount phrase: {}", mnemonic.phrase());
-    let newpair = sr25519::Pair::from_phrase(mnemonic.phrase(), None);
+    let newpair = sr25519::Pair::from_phrase(mnemonic.phrase(), None).unwrap().0;
     info!("newaccount address (ss58): {}", newpair.public().to_ss58check());
     let outputjson = object!{
         "phrase" => mnemonic.phrase(),
-        "address" => newpair.public().to_ss58check(),
-        "pair" => hex::encode(&newpair.encode())
+        "address" => newpair.public().to_ss58check()
     };
-    let output = env.new_string(outputjson).unwrap();
+    let output = env.new_string(outputjson.dump()).unwrap();
     output.into_inner()
 }
 
@@ -79,33 +79,32 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newClaim(env: J
             .with_min_level(Level::Trace) // limit log level
             .with_tag("encointer-api-native")); // logs will show under mytag tag
 
-    let arg = json::parse(CString::from(
-        CStr::from_ptr(
-            env.get_string(j_arg).unwrap().as_ptr())));
+    let arg = json::parse(CStr::from_ptr(
+        env.get_string(j_arg).unwrap().as_ptr()).to_str().unwrap()).unwrap();
 
-    let pair: Option<sr25519::Pair> = match hex::decode(arg["pair"]) {
-        Ok(p) => Some(p.decode()),
-        Err(_) => None,
+    let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
+        Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
+        None => None,
     };
-    let cindex: Option<CeremonyIndexType> = match hex::decode(arg["ceremony_index"]) {
-        Ok(x) => Some(x.decode()),
-        Err(_) => None,
+    let cindex: Option<CeremonyIndexType> = match arg["ceremony_index"].as_str() {
+        Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
+        None => None,
     };
-    let mindex: Option<MeetupIndexType> = match hex::decode(arg["meetup_index"]) {
-        Ok(x) => Some(x.decode()),
-        Err(_) => None,
+    let mindex: Option<MeetupIndexType> = match arg["meetup_index"].as_str() {
+        Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
+        None => None,
     };
-    let n_participans: Option<CeremonyIndexType> = match hex::decode(arg["n_participants"]) {
-        Ok(x) => Some(x.decode()),
-        Err(_) => None,
+    let n_participants: Option<CeremonyIndexType> = match arg["n_participants"].as_str() {
+        Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
+        None => None,
     };
 
-    if pair.is_none() { return env.new_string("ERROR: must specify pair"); }
-    if cindex.is_none() { return env.new_string("ERROR: must specify ceremony index"); }
-    if mindex.is_none() { return env.new_string("ERROR: must specify ceremony index"); }
-    if n_participants.is_none() { return env.new_string("ERROR: must specify ceremony index"); }
+    if pair.is_none() { return env.new_string("ERROR: must specify phrase").unwrap().into_inner(); }
+    if cindex.is_none() { return env.new_string("ERROR: must specify ceremony index").unwrap().into_inner(); }
+    if mindex.is_none() { return env.new_string("ERROR: must specify ceremony index").unwrap().into_inner(); }
+    if n_participants.is_none() { return env.new_string("ERROR: must specify ceremony index").unwrap().into_inner(); }
 
-    let claim = ClaimOfAttendance {
+    let claim = ClaimOfAttendance::<AccountId> {
 		claimant_public: pair.unwrap().public().into(),
         ceremony_index: cindex.unwrap(),
         meetup_index: mindex.unwrap(),
@@ -122,20 +121,19 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_signClaim(env: 
             .with_min_level(Level::Trace) // limit log level
             .with_tag("encointer-api-native")); // logs will show under mytag tag
 
-    let arg = json::parse(CString::from(
-        CStr::from_ptr(
-            env.get_string(j_arg).unwrap().as_ptr())));
+    let arg = json::parse(CStr::from_ptr(
+        env.get_string(j_arg).unwrap().as_ptr()).to_str().unwrap()).unwrap();
 
-    let pair: Option<sr25519::Pair> = match hex::decode(arg["pair"]) {
-        Ok(p) => Some(p.decode()),
-        Err(_) => None,
+    let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
+        Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
+        None => None,
     };
-    let claim: Option<claim> = match hex::decode(arg["claim"]) {
-        Ok(c) => Some(c.decode()),
-        Err(_) => None,
+    let claim: Option<ClaimOfAttendance<AccountId>> = match arg["claim"].as_str() {
+        Some(c) => Some(Decode::decode(&mut &hex::decode(c).unwrap()[..]).unwrap()),
+        None => None,
     };
-    if pair.is_none() { return env.new_string("ERROR: must specify pair"); }
-    if claim.is_none() { return env.new_string("ERROR: must specify claim"); }
+    if pair.is_none() { return env.new_string("ERROR: must specify phrase").unwrap().into_inner(); }
+    if claim.is_none() { return env.new_string("ERROR: must specify claim").unwrap().into_inner(); }
     let witness = Witness { 
         claim: claim.unwrap().clone(),
         signature: Signature::from(pair.unwrap().sign(&claim.encode())),
@@ -152,64 +150,54 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             .with_min_level(Level::Trace) // limit log level
             .with_tag("encointer-api-native")); // logs will show under mytag tag
 
-    let request = CString::from(
-        CStr::from_ptr(
-            env.get_string(j_request).unwrap().as_ptr()));
+    let request = env.get_string(j_request).unwrap().unwrap();
 
-    let arg = json::parse(CString::from(
-        CStr::from_ptr(
-            env.get_string(j_arg).unwrap().as_ptr())));
+    let arg = json::parse(env.get_string(j_arg).unwrap().unwrap()).unwrap();
 
-    let pair: Option<sr25519::Pair> = match hex::decode(arg["pair"]) {
-        Ok(p) => Some(p.decode()),
-        Err(_) => None,
+    let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
+        Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
+        None => None,
     };
-    let genesis_hash: Option<Hash> = match hexstr_to_hash(arg["genesis_hash"]) {
-        Ok(h) => Some(h),
-        Err(_) => None,
+    let genesis_hash: Option<Hash> = match arg["genesis_hash"].as_str() {
+        Some(h) => Some(hexstr_to_hash(h.to_string()).unwrap()),
+        None => None,
+    };        
+    let spec_version: Option<u32> = arg["spec_version"].as_u32();
+    let nonce: Option<u32> = arg["nonce"].as_u32();
+    let witnesses: Option<Vec<Witness<Signature, AccountId>>> = match arg["witnesses"].as_str() {
+        Some(w) => w.iter().map(|x| Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
+        None => None,
     };
-    let spec_version: Option<Hash> = match arg["spec_version"] {
-        json::Null => None,
-        any => Some(any),
-    };
-    let nonce: Option<u32> = match arg["nonce"] {
-        json::Null => None,
-        any => Some(any.into()),
-    };
-    let witnesses: Option<Vec<Witness>> = match arg["witnesses"] {
-        json::Null => None,
-        any => any.iter().map(|x| hex::decode(x).unwrap().decode().unwrap()),
-    };
-    let jsonreq = match request {
+    let jsonreq = match request.to_str() {
         "subscribe_events" => {
             let key = storage_key_hash("System", "Events", None);
-            json_req::state_subscribe_storage(&key).to_string()
+            json_req::state_subscribe_storage(&key)
         }
         "subscribe_balance_for" => {
-            if pair.is_none() { "ERROR: must specify pair".to_string() }
-            let key = storage_key_hash("Balances", "FreeBalances", AccountId::from(pair.unwrap()).encode());
-            json_req::state_subscribe_storage(&key).to_string()
+            if pair.is_none() { "ERROR: must specify pair" }
+            let key = storage_key_hash("Balances", "FreeBalances", Some(AccountId::from(pair.unwrap()).encode()));
+            json_req::state_subscribe_storage(&key)
         }
         "subscribe_nonce_for" => {
-            if pair.is_none() { "ERROR: must specify pair".to_string() }
-            let key = storage_key_hash("System", "AccountNone", AccountId::from(pair.unwrap()).encode());
-            json_req::state_subscribe_storage(&key).to_string()
+            if pair.is_none() { "ERROR: must specify pair" }
+            let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.unwrap()).encode()));
+            json_req::state_subscribe_storage(&key)
         },
         "get_meetup_index_for" => {
-            if pair.is_none() { "ERROR: must specify pair".to_string() }
+            if pair.is_none() { "ERROR: must specify pair" }
             // FIXME: need to implement double_map for api-client first.
-            let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", AccountId::from(pair.unwrap()).encode());
-            json_req::state_get_storage(&key).to_string()
+            let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", Some(AccountId::from(pair.unwrap()).encode()));
+            json_req::state_get_storage(&key)
         },
         "get_ceremony_index" => {
             let key = storage_key_hash("EncointerCeremonies", "CurrentCeremonyIndex", None);
-            json_req::state_get_storage(&key).to_string()
+            json_req::state_get_storage(&key)
         },
         "get_runtime_version" => {
-            json_req::state_get_runtime_version().to_string()
+            json_req::state_get_runtime_version()
         },
         "get_genesis_hash" => {
-            json_req::chain_get_block_hash().to_string()
+            json_req::chain_get_block_hash()
         },
         "bootstrap_funding" => {
             // TODO to be replaced by faucet
@@ -226,7 +214,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
                 genesis_hash.unwrap(),
                 spec_version.unwrap()
             );
-            let jsonreq = json_req::author_submit_and_watch_extrinsic(&xt).to_string();
+            json_req::author_submit_and_watch_extrinsic(&xt)
         },
         "register_participant" => {
             if pair.is_none() { "ERROR: must specify pair".to_string() }
@@ -240,7 +228,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
                 genesis_hash.unwrap(),
                 spec_version.unwrap()
             );
-            let jsonreq = json_req::author_submit_and_watch_extrinsic(&xt).to_string();
+            json_req::author_submit_and_watch_extrinsic(&xt)
         },
          "register_witnesses" => {
             if pair.is_none() { "ERROR: must specify pair".to_string() }
@@ -254,14 +242,14 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
                 Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses.unwrap())),
                 nonce.unwrap(),
                 genesis_hash.unwrap(),
-                spec_version.unwrap(),
+                spec_version.unwrap()
             );
-            let jsonreq = json_req::author_submit_and_watch_extrinsic(&xt).to_string();
+            json_req::author_submit_and_watch_extrinsic(&xt)
         },
        
     };
     
-    let output = env.new_string(jsonreq).unwrap();
+    let output = env.new_string(jsonreq.to_string()).unwrap();
     output.into_inner()
 }
 

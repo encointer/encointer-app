@@ -12,6 +12,8 @@ oping = "0.3.3"
 #env_logger = "0.6"
 hex = "0.3.2"
 json = "0.12.0"
+substrate-bip39 = "0.3.1"
+tiny-bip39 = "0.6.2"
 
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = "0.8"
@@ -31,9 +33,21 @@ version = "1.0.0"
 
 [dependencies.primitives]
 git = 'https://github.com/paritytech/substrate'
+rev = 'f17d023bbe179f15678ac9989f471c9b18917e17'
 package = "substrate-primitives"
 
 [dependencies.encointer-node-runtime]
 git = 'https://github.com/encointer/encointer-node'
 branch = "PoC1"
 package = "encointer-node-runtime"
+
+[dependencies.keyring]
+git = 'https://github.com/paritytech/substrate'
+rev = 'f17d023bbe179f15678ac9989f471c9b18917e17'
+package = "substrate-keyring"
+
+[patch."https://github.com/paritytech/substrate"]
+substrate-primitives = { package = "substrate-primitives", git = "https://github.com/scs/substrate-api-client", branch = "cl-drop-account-key", default-features = false }
+
+[patch.crates-io]
+ed25519-dalek = { git = "https://github.com/scs/ed25519-dalek.git", branch = "no_std_sgx"}
