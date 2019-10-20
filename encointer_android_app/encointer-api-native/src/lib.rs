@@ -31,7 +31,7 @@ use substrate_api_client::{
     Api,
     compose_extrinsic_offline,
     extrinsic, 
-    extrinsic::xt_primitives::{AccountId, AnySignature as Signature, UncheckedExtrinsicV3},
+    extrinsic::xt_primitives::{AccountId, UncheckedExtrinsicV3},
     rpc::json_req,
     utils::{storage_key_hash, hexstr_to_hash},
 };
@@ -98,17 +98,16 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newClaim(env: J
         Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
         None => None,
     };
-
-    if pair.is_none() { return env.new_string("ERROR: must specify phrase").unwrap().into_inner(); }
-    if cindex.is_none() { return env.new_string("ERROR: must specify ceremony index").unwrap().into_inner(); }
-    if mindex.is_none() { return env.new_string("ERROR: must specify ceremony index").unwrap().into_inner(); }
-    if n_participants.is_none() { return env.new_string("ERROR: must specify ceremony index").unwrap().into_inner(); }
+    let pair = pair.expect("pair is specified");
+    let cindex = cindex.expect("ceremony index is specified");
+    let mindex = mindex.expect("meetup index is specified");
+    let n_participants = n_participants.expect("n participants is specified");
 
     let claim = ClaimOfAttendance::<AccountId> {
-		claimant_public: pair.unwrap().public().into(),
-        ceremony_index: cindex.unwrap(),
-        meetup_index: mindex.unwrap(),
-        number_of_participants_confirmed: n_participants.unwrap(),
+		claimant_public: pair.public().into(),
+        ceremony_index: cindex,
+        meetup_index: mindex,
+        number_of_participants_confirmed: n_participants,
 	};
     let output = env.new_string(hex::encode(claim.encode())).unwrap();
     output.into_inner()
@@ -132,12 +131,12 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_signClaim(env: 
         Some(c) => Some(Decode::decode(&mut &hex::decode(c).unwrap()[..]).unwrap()),
         None => None,
     };
-    if pair.is_none() { return env.new_string("ERROR: must specify phrase").unwrap().into_inner(); }
-    if claim.is_none() { return env.new_string("ERROR: must specify claim").unwrap().into_inner(); }
+    let pair = pair.expect("pair is specified");
+    let claim = claim.expect("claim is specified");
     let witness = Witness { 
-        claim: claim.unwrap().clone(),
-        signature: Signature::from(pair.unwrap().sign(&claim.encode())),
-        public: pair.unwrap().public().into(),
+        claim: claim.clone(),
+        signature: Signature::from(pair.sign(&claim.encode())),
+        public: pair.public().into(),
 	};
     let output = env.new_string(hex::encode(witness.encode())).unwrap();
     output.into_inner()    
@@ -150,9 +149,11 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             .with_min_level(Level::Trace) // limit log level
             .with_tag("encointer-api-native")); // logs will show under mytag tag
 
-    let request = env.get_string(j_request).unwrap().unwrap();
+    let request = CStr::from_ptr(
+        env.get_string(j_request).unwrap().as_ptr()).to_str().unwrap();
 
-    let arg = json::parse(env.get_string(j_arg).unwrap().unwrap()).unwrap();
+    let arg = json::parse(CStr::from_ptr(
+        env.get_string(j_arg).unwrap().as_ptr()).to_str().unwrap()).unwrap();
 
     let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
         Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
@@ -164,29 +165,31 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
     };        
     let spec_version: Option<u32> = arg["spec_version"].as_u32();
     let nonce: Option<u32> = arg["nonce"].as_u32();
-    let witnesses: Option<Vec<Witness<Signature, AccountId>>> = match arg["witnesses"].as_str() {
-        Some(w) => w.iter().map(|x| Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
-        None => None,
+    let witnesses: Option<Vec<Witness<Signature, AccountId>>> = match &arg["witnesses"] {
+        json::JsonValue::Array(w) => Some(w.iter().map(|x| 
+            Decode::decode(&mut &hex::decode((*x).as_str().unwrap()).unwrap()[..])
+            .unwrap()).collect()),
+        _ => None,
     };
-    let jsonreq = match request.to_str() {
+    let jsonreq = match request {
         "subscribe_events" => {
             let key = storage_key_hash("System", "Events", None);
             json_req::state_subscribe_storage(&key)
         }
         "subscribe_balance_for" => {
-            if pair.is_none() { "ERROR: must specify pair" }
-            let key = storage_key_hash("Balances", "FreeBalances", Some(AccountId::from(pair.unwrap()).encode()));
+            let pair = pair.expect("pair is specified");
+            let key = storage_key_hash("Balances", "FreeBalances", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage(&key)
         }
         "subscribe_nonce_for" => {
-            if pair.is_none() { "ERROR: must specify pair" }
-            let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.unwrap()).encode()));
+            let pair = pair.expect("pair is specified");
+            let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage(&key)
         },
         "get_meetup_index_for" => {
-            if pair.is_none() { "ERROR: must specify pair" }
+            let pair = pair.expect("pair is specified");
             // FIXME: need to implement double_map for api-client first.
-            let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", Some(AccountId::from(pair.unwrap()).encode()));
+            let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", Some(AccountId::from(pair.public()).encode()));
             json_req::state_get_storage(&key)
         },
         "get_ceremony_index" => {
@@ -201,50 +204,53 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         },
         "bootstrap_funding" => {
             // TODO to be replaced by faucet
-            if pair.is_none() { "ERROR: must specify pair".to_string() }
-            if nonce.is_none() { "ERROR: must specify nonce".to_string() }
-            if genesis_hash.is_none() { "ERROR: must specify genesis hash".to_string() }
-            if spec_version.is_none() { "ERROR: must specify spec version".to_string() }
+            let pair = pair.expect("pair is specified");
+            let nonce = nonce.expect("nonce is specified");
+            let genesis_hash = genesis_hash.expect("genesis hash is specified");
+            let spec_version = spec_version.expect("spec version is specified");
             let from = AccountKeyring::Alice.pair();
-            let to = AccountId::from(pair);
+            let to = AccountId::from(pair.public());
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
                 from,
                 Call::Balances(BalancesCall::transfer(to.clone().into(), 42)),
-                nonce.unwrap(),
-                genesis_hash.unwrap(),
-                spec_version.unwrap()
+                nonce,
+                genesis_hash,
+                spec_version
             );
-            json_req::author_submit_and_watch_extrinsic(&xt)
+            json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
         },
         "register_participant" => {
-            if pair.is_none() { "ERROR: must specify pair".to_string() }
-            if nonce.is_none() { "ERROR: must specify nonce".to_string() }
-            if genesis_hash.is_none() { "ERROR: must specify genesis hash".to_string() }
-            if spec_version.is_none() { "ERROR: must specify spec version".to_string() } 
+            let pair = pair.expect("pair is specified");
+            let nonce = nonce.expect("nonce is specified");
+            let genesis_hash = genesis_hash.expect("genesis hash is specified");
+            let spec_version = spec_version.expect("spec version is specified");
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
-                pair.unwrap(),
+                pair,
                 Call::EncointerCeremonies(EncointerCeremoniesCall::register_participant()),
-                nonce.unwrap(),
-                genesis_hash.unwrap(),
-                spec_version.unwrap()
+                nonce,
+                genesis_hash,
+                spec_version
             );
-            json_req::author_submit_and_watch_extrinsic(&xt)
+            json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
         },
          "register_witnesses" => {
-            if pair.is_none() { "ERROR: must specify pair".to_string() }
-            if nonce.is_none() { "ERROR: must specify nonce".to_string() }
-            if genesis_hash.is_none() { "ERROR: must specify genesis hash".to_string() }
-            if spec_version.is_none() { "ERROR: must specify spec version".to_string() } 
-            if witnesses.is_none() { "ERROR: must specify witnesses".to_string() } 
+            let pair = pair.expect("pair is specified");
+            let nonce = nonce.expect("nonce is specified");
+            let genesis_hash = genesis_hash.expect("genesis hash is specified");
+            let spec_version = spec_version.expect("spec version is specified");
+            let witnesses = witnesses.expect("witnesses are specified");
             
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
-                pair.unwrap(),
-                Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses.unwrap())),
-                nonce.unwrap(),
-                genesis_hash.unwrap(),
-                spec_version.unwrap()
+                pair,
+                Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses)),
+                nonce,
+                genesis_hash,
+                spec_version
             );
-            json_req::author_submit_and_watch_extrinsic(&xt)
+            json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
+        },
+        _ => {
+            panic!("unknown request");
         },
        
     };

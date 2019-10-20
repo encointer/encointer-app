@@ -132,6 +132,7 @@ public class EncointerActivity extends AppCompatActivity {
                     Log.i(TAG, "subscribing to Alexander Block updates");
                     websocket.sendText("{\"id\":12,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
                     Log.i(TAG, "subscribing to Events");
+                    Log.i(TAG, "subscribing to Events");
                     websocket.sendText("{\"id\":\"1\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
                             //getJsonReqSubscribeEvents();
                 }
