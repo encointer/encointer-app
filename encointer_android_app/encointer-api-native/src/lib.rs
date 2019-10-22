@@ -233,7 +233,8 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             );
             json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
         },
-         "register_witnesses" => {
+        /*
+        "register_witnesses" => {
             let pair = pair.expect("pair is specified");
             let nonce = nonce.expect("nonce is specified");
             let genesis_hash = genesis_hash.expect("genesis hash is specified");
@@ -249,6 +250,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             );
             json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
         },
+        */
         _ => {
             panic!("unknown request");
         },

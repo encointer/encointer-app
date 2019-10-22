@@ -23,7 +23,7 @@ lto = true
 
 [lib]
 name = "encointer_api_native"
-#crate-type = ["cdylib"]
+crate-type = ["cdylib"]
 
 [dependencies.codec]
 default-features = false

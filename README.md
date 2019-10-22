@@ -17,20 +17,21 @@ mobile phone app for encointer ceremonies and wallet
    ```
    [target.aarch64-linux-android]
    ar = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar"
-   linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang"
+   linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang"
    
    [target.armv7-linux-androideabi]
    ar = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ar"
-   linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi26-clang"
+   linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi16-clang"
    
    [target.i686-linux-android]
    ar = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-ar"
-   linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android26-clang"
+   linker = "/home/<user>/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android16-clang"
    ```
-1. fix paths and add symlinks 
+1. add path
    ```
    export PATH=~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-   cd ~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/
+   ```
+<!---   cd ~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/
    ln -s i686-linux-android16-clang i686-linux-android-clang
    ln -s armv7a-linux-androideabi16-clang arm-linux-androideabi-clang
    ln -s aarch64-linux-android21-clang aarch64-linux-android-clang
@@ -42,7 +43,7 @@ mobile phone app for encointer ceremonies and wallet
       ln -s armv7a-linux-androideabi16-clang arm-linux-androideabi-gcc
       ln -s aarch64-linux-android21-clang aarch64-linux-android-gcc
       ```
-
+--->
 1. build native library
    ```
    ./build-native-libs.sh

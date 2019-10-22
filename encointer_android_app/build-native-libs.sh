@@ -1,10 +1,14 @@
 #!/bin/sh
 cd encointer-api-native
 echo "building for i686"
+#export NDK_TOOLCHAIN=~/Android/Sdk/ndk/toolchains/llvm/prebuilt/linux-x86_64/bin
+export CC=i686-linux-android16-clang
 cargo +nightly build --target i686-linux-android --release
 echo "building for armv7"
+export CC=armv7a-linux-androideabi16-clang
 cargo +nightly build --target armv7-linux-androideabi --release
 echo "building for aarch64"
+export CC=aarch64-linux-android21-clang
 cargo +nightly build --target aarch64-linux-android --release
 
 echo "copying libs to android project"
