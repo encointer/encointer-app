@@ -46,13 +46,13 @@ public class EncointerActivity extends AppCompatActivity {
 
     WebSocket ws = null;
     String account_address = null;
-    String account_pair = null;
+    String account_phrase = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
-        //System.loadLibrary("encointer_api_native");
+        System.loadLibrary("encointer_api_native");
 
 
         setContentView(R.layout.activity_main);
@@ -68,13 +68,13 @@ public class EncointerActivity extends AppCompatActivity {
 
         if (sharedPref.contains("account") == false) {
             Log.i(TAG, "no previously used account found. generating a new one");
-            sharedPref.edit().putString("account", "{\"phrase\": \"one two three\", \"address\": \"f5zhsAEDc\", \"pair\": \"0x1234\"}").apply();
-            //sharedPref.edit().putString("account", newAccount()).apply();
+            //sharedPref.edit().putString("account", "{\"phrase\": \"one two three\", \"address\": \"f5zhsAEDc\", \"pair\": \"0x1234\"}").apply();
+            sharedPref.edit().putString("account", newAccount()).apply();
         }
         try {
             JSONObject jsonObj = new JSONObject(sharedPref.getString("account", "error_no_account_found"));
             account_address = jsonObj.getString("address");
-            account_pair = jsonObj.getString("pair");
+            account_phrase = jsonObj.getString("phrase");
             TextView TextView_account_address = findViewById(R.id.account_address);
             TextView_account_address.setText(account_address);
         }
@@ -88,7 +88,6 @@ public class EncointerActivity extends AppCompatActivity {
         // Create a WebSocket. The timeout value set above is used.
         try {
             ws = factory.createSocket(node_ws_url);
-
             ws.addListener(new WebSocketAdapter() {
                 @Override
                 public void onTextMessage(WebSocket websocket, String message) throws Exception {
@@ -132,9 +131,13 @@ public class EncointerActivity extends AppCompatActivity {
                     Log.i(TAG, "subscribing to Alexander Block updates");
                     websocket.sendText("{\"id\":12,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
                     Log.i(TAG, "subscribing to Events");
-                    Log.i(TAG, "subscribing to Events");
                     websocket.sendText("{\"id\":\"1\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
-                            //getJsonReqSubscribeEvents();
+                    JSONObject args = new JSONObject();
+                    args.put("phrase", account_phrase);
+                    websocket.sendText(getJsonReq("subscribe_balance_for", args.toString()));
+                    websocket.sendText(getJsonReq("subscribe_nonce_for", args.toString()));
+                    websocket.sendText(getJsonReq("get_runtime_version",""));
+                    websocket.sendText(getJsonReq("get_genesis_hash", ""));
                 }
             });
 
@@ -211,30 +214,10 @@ public class EncointerActivity extends AppCompatActivity {
         return true;
     }
 
-
+    private native String newAccount();
+    private native String newClaim(String arg);
+    private native String signClaim(String arg);
+    private native String getJsonReq(String request, String arg);
 
 }
 
-/*
-class NativeApiThread extends Thread {
-
-         String url;
-
-         private static final String TAG = "NativeApiThread";
-
-         NativeApiThread(String url) {
-             this.url = url;
-         }
-
-         public void run() {
-             Log.d(TAG, "spawning native call sendxt in new thread");
-             String res = sendxt(this.url);
-             Log.d(TAG, "native call sendxt has returned");
-
-         }
-
-         // encointer-api-native functions
-         private native String sendxt(String to);
-
-     }
-     */
