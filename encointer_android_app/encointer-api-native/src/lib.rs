@@ -50,15 +50,50 @@ use encointer_node_runtime::{Call, EncointerCeremoniesCall, BalancesCall,
     encointer_ceremonies::{ClaimOfAttendance, Witness, CeremonyIndexType,
         MeetupIndexType}
 }; 
+use serde_json;
+
+static RUNTIME_EXCEPTION_CLASS: &str = "java/lang/RuntimeException";
+
+macro_rules! unwrap_or_return { ( $obj:expr, $env:expr, $err:literal ) => { 
+    match $obj { 
+        None => { 
+            error!($err);
+            let output = $env.new_string($err).unwrap();
+            return output.into_inner();
+        },
+        Some(x) => x
+    } 
+}} 
+
+macro_rules! parse_json_j { ( $obj:expr, $env:expr ) => { 
+    match json::parse(CStr::from_ptr(
+        $env.get_string($obj).unwrap().as_ptr()).to_str().unwrap()) {
+            Ok(j) => j,
+            _ => { 
+                let output = $env.new_string("error parsing arg json").unwrap();
+                return output.into_inner();
+            },
+    }
+}} 
+
 
 #[no_mangle]
-pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newAccount(env: JNIEnv, _: JObject) -> jstring {
- 
+pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_initNativeLogger(env: JNIEnv, _: JObject) {
     android_logger::init_once(
         Config::default()
             .with_min_level(Level::Trace) // limit log level
             .with_tag("encointer-api-native") // logs will show under mytag tag
     );
+    info!("native logger initialized");
+} 
+
+#[no_mangle]
+pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_mustThrowException(env: JNIEnv, _: JObject) {
+    env.throw_new(RUNTIME_EXCEPTION_CLASS, "always throwing error for testing").unwrap(); 
+}
+
+#[no_mangle]
+pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newAccount(env: JNIEnv, _: JObject) -> jstring {
     info!("called into native newaccount");
     let mnemonic = Mnemonic::new(MnemonicType::Words12, Language::English);
     info!("newaccount phrase: {}", mnemonic.phrase());
@@ -74,14 +109,8 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newAccount(env:
 
 #[no_mangle]
 pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newClaim(env: JNIEnv, _: JObject, j_arg: JString) -> jstring {
-    android_logger::init_once(
-        Config::default()
-            .with_min_level(Level::Trace) // limit log level
-            .with_tag("encointer-api-native")); // logs will show under mytag tag
-
-    let arg = json::parse(CStr::from_ptr(
-        env.get_string(j_arg).unwrap().as_ptr()).to_str().unwrap()).unwrap();
-
+    let arg = parse_json_j!(j_arg, env);
+    info!("newClaim called with args {}", arg.dump());
     let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
         Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
         None => None,
@@ -115,14 +144,9 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newClaim(env: J
 
 #[no_mangle]
 pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_signClaim(env: JNIEnv, _: JObject, j_arg: JString) -> jstring {
-    android_logger::init_once(
-        Config::default()
-            .with_min_level(Level::Trace) // limit log level
-            .with_tag("encointer-api-native")); // logs will show under mytag tag
-
-    let arg = json::parse(CStr::from_ptr(
-        env.get_string(j_arg).unwrap().as_ptr()).to_str().unwrap()).unwrap();
-
+    info!("signClaim called");
+    let arg = parse_json_j!(j_arg, env);
+    info!("signClaim called with args {}", arg.dump());
     let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
         Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
         None => None,
@@ -144,17 +168,12 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_signClaim(env: 
 
 #[no_mangle]
 pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env: JNIEnv, _: JObject, j_request: JString, j_arg: JString) -> jstring {
-    android_logger::init_once(
-        Config::default()
-            .with_min_level(Level::Trace) // limit log level
-            .with_tag("encointer-api-native")); // logs will show under mytag tag
-
+    info!("getJsonReq called");
     let request = CStr::from_ptr(
-        env.get_string(j_request).unwrap().as_ptr()).to_str().unwrap();
-
-    let arg = json::parse(CStr::from_ptr(
-        env.get_string(j_arg).unwrap().as_ptr()).to_str().unwrap()).unwrap();
-
+        env.get_string(j_request).unwrap().as_ptr()).to_string_lossy().into_owned();
+    info!("getJsonReq called with request {}", request);
+    let arg = parse_json_j!(j_arg, env);
+    info!("getJsonReq called with args {}", arg.dump());
     let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
         Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
         None => None,
@@ -171,23 +190,24 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             .unwrap()).collect()),
         _ => None,
     };
-    let jsonreq = match request {
+    info!("getJsonReq: matching request: {}", request);
+    let jsonreq = match request.as_str() {
         "subscribe_events" => {
             let key = storage_key_hash("System", "Events", None);
             json_req::state_subscribe_storage(&key)
         }
         "subscribe_balance_for" => {
-            let pair = pair.expect("pair is specified");
+            let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             let key = storage_key_hash("Balances", "FreeBalances", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage(&key)
         }
         "subscribe_nonce_for" => {
-            let pair = pair.expect("pair is specified");
+            let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage(&key)
         },
         "get_meetup_index_for" => {
-            let pair = pair.expect("pair is specified");
+            let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             // FIXME: need to implement double_map for api-client first.
             let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", Some(AccountId::from(pair.public()).encode()));
             json_req::state_get_storage(&key)
@@ -204,10 +224,10 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         },
         "bootstrap_funding" => {
             // TODO to be replaced by faucet
-            let pair = pair.expect("pair is specified");
-            let nonce = nonce.expect("nonce is specified");
-            let genesis_hash = genesis_hash.expect("genesis hash is specified");
-            let spec_version = spec_version.expect("spec version is specified");
+            let pair = unwrap_or_return!(pair, env, "pair has to be specified");
+            let nonce = unwrap_or_return!(nonce, env, "nonce has to be specified");
+            let genesis_hash = unwrap_or_return!(genesis_hash, env, "genesis_hash has to be specified");
+            let spec_version = unwrap_or_return!(spec_version, env, "spec_version has to be specified");
             let from = AccountKeyring::Alice.pair();
             let to = AccountId::from(pair.public());
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
@@ -220,10 +240,10 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
         },
         "register_participant" => {
-            let pair = pair.expect("pair is specified");
-            let nonce = nonce.expect("nonce is specified");
-            let genesis_hash = genesis_hash.expect("genesis hash is specified");
-            let spec_version = spec_version.expect("spec version is specified");
+            let pair = unwrap_or_return!(pair, env, "pair has to be specified");
+            let nonce = unwrap_or_return!(nonce, env, "nonce has to be specified");
+            let genesis_hash = unwrap_or_return!(genesis_hash, env, "genesis_hash has to be specified");
+            let spec_version = unwrap_or_return!(spec_version, env, "spec_version has to be specified");
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
                 pair,
                 Call::EncointerCeremonies(EncointerCeremoniesCall::register_participant()),
@@ -235,12 +255,12 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         },
         /*
         "register_witnesses" => {
-            let pair = pair.expect("pair is specified");
-            let nonce = nonce.expect("nonce is specified");
-            let genesis_hash = genesis_hash.expect("genesis hash is specified");
-            let spec_version = spec_version.expect("spec version is specified");
-            let witnesses = witnesses.expect("witnesses are specified");
-            
+            let pair = unwrap_or_return!(pair, env, "pair has to be specified");
+            let nonce = unwrap_or_return!(nonce, env, "nonce has to be specified");
+            let genesis_hash = unwrap_or_return!(genesis_hash, env, "genesis_hash has to be specified");
+            let spec_version = unwrap_or_return!(spec_version, env, "spec_version has to be specified");
+            let witnesses = unwrap_or_return!(witnesses, env, "witnesses has to be specified");
+           
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
                 pair,
                 Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses)),
@@ -252,11 +272,11 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         },
         */
         _ => {
-            panic!("unknown request");
+            error!("getJsonReq: unknown request: {}", request);
+            serde_json::Value::default()
         },
-       
     };
-    
+    info!("getJsonReq returning: {:?}",jsonreq);
     let output = env.new_string(jsonreq.to_string()).unwrap();
     output.into_inner()
 }
