@@ -22,6 +22,7 @@ import com.neovisionaries.ws.client.*;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.math.BigInteger;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class EncointerActivity extends AppCompatActivity {
     public static final String EXTRA_USERNAME = "com.encointer.signer.USERNAME";
 
     private static final String[] REQUIRED_PERMISSIONS =
-            new String[] {
+            new String[]{
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH_ADMIN,
                     Manifest.permission.ACCESS_WIFI_STATE,
@@ -53,6 +54,12 @@ public class EncointerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
         System.loadLibrary("encointer_api_native");
+        initNativeLogger();
+        try {
+            mustThrowException();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         setContentView(R.layout.activity_main);
@@ -77,8 +84,8 @@ public class EncointerActivity extends AppCompatActivity {
             account_phrase = jsonObj.getString("phrase");
             TextView TextView_account_address = findViewById(R.id.account_address);
             TextView_account_address.setText(account_address);
-        }
-        catch (Exception e) {
+            Log.i(TAG, "successfully loaded account credentials");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // Create a WebSocket factory and set 5000 milliseconds as a timeout
@@ -120,24 +127,35 @@ public class EncointerActivity extends AppCompatActivity {
                                     break;
                             }
                         }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+
                 @Override
                 public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
                     Log.i(TAG, "onConnected is executed");
+                    System.loadLibrary("encointer_api_native");
                     Log.i(TAG, "subscribing to Alexander Block updates");
                     websocket.sendText("{\"id\":12,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
                     Log.i(TAG, "subscribing to Events");
                     websocket.sendText("{\"id\":\"1\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
+                    Log.i(TAG, "subscribing to balance");
                     JSONObject args = new JSONObject();
-                    args.put("phrase", account_phrase);
-                    websocket.sendText(getJsonReq("subscribe_balance_for", args.toString()));
-                    websocket.sendText(getJsonReq("subscribe_nonce_for", args.toString()));
-                    websocket.sendText(getJsonReq("get_runtime_version",""));
-                    websocket.sendText(getJsonReq("get_genesis_hash", ""));
+                    try {
+                        args.put("phrase", account_phrase);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        websocket.sendText(getJsonReq("subscribe_balance_for", args.toString()));
+                        websocket.sendText(getJsonReq("subscribe_nonce_for", args.toString()));
+                        websocket.sendText(getJsonReq("get_runtime_version", "None"));
+                        websocket.sendText(getJsonReq("get_genesis_hash", ""));
+                        Log.i(TAG, "all subscriptions sent");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
@@ -176,7 +194,7 @@ public class EncointerActivity extends AppCompatActivity {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         sharedPref.edit().putString("username", username).apply();
 
-        if(username.length() == 0) {
+        if (username.length() == 0) {
             editText_username.setError("Please enter a valid username!");
         } else {
             intent.putExtra(EXTRA_USERNAME, username);
@@ -185,22 +203,10 @@ public class EncointerActivity extends AppCompatActivity {
     }
 
     public void sendExtrinsic(View view) {
-
         EditText editText_url = findViewById(R.id.editText_url);
         String url = editText_url.getText().toString();
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         sharedPref.edit().putString("node_ws_url", url).apply();
-
-
-        /*
-        if(url.length() == 0) {
-            editText_url.setError("Please enter a valid username!");
-        } else {
-
-            NativeApiThread p = new NativeApiThread(url);
-            p.start();
-        }
-*/
     }
 
     /** Returns true if the app was granted all the permissions. Otherwise, returns false. */
@@ -214,6 +220,8 @@ public class EncointerActivity extends AppCompatActivity {
         return true;
     }
 
+    private native String initNativeLogger();
+    private native String mustThrowException();
     private native String newAccount();
     private native String newClaim(String arg);
     private native String signClaim(String arg);
