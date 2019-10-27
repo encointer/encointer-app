@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -55,11 +56,11 @@ public class EncointerActivity extends AppCompatActivity {
         AndroidThreeTen.init(this);
         System.loadLibrary("encointer_api_native");
         initNativeLogger();
-        try {
+        /*try {
             mustThrowException();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         setContentView(R.layout.activity_main);
@@ -88,10 +89,34 @@ public class EncointerActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        startWebsocket(node_ws_url);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (ws != null) {
+            ws.disconnect();
+            ws = null;
+        }
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
+            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
+        }
+
+    }
+
+    public void startWebsocket(String node_ws_url) {
         // Create a WebSocket factory and set 5000 milliseconds as a timeout
         // value for socket connection.
         WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(5000);
-
         // Create a WebSocket. The timeout value set above is used.
         try {
             ws = factory.createSocket(node_ws_url);
@@ -137,25 +162,41 @@ public class EncointerActivity extends AppCompatActivity {
                     Log.i(TAG, "onConnected is executed");
                     System.loadLibrary("encointer_api_native");
                     Log.i(TAG, "subscribing to Alexander Block updates");
-                    websocket.sendText("{\"id\":12,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
-                    Log.i(TAG, "subscribing to Events");
-                    websocket.sendText("{\"id\":\"1\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
+                    websocket.sendText("{\"id\":11,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
+
+                    sendRpcRequest("subscribe_events", 12);
+                    sendRpcRequest("subscribe_balance_for", 13);
+                    sendRpcRequest("subscribe_nonce_for", 14);
+                    sendRpcRequest("get_runtime_version", 15);
+                    sendRpcRequest("get_genesis_hash", 16);
+/*
+                    //SystemClock.sleep(1000);
+                    //Log.i(TAG, "subscribing to Events");
+                    //websocket.sendText("{\"id\":\"12\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
+                    SystemClock.sleep(1000);
                     Log.i(TAG, "subscribing to balance");
                     JSONObject args = new JSONObject();
                     try {
                         args.put("phrase", account_phrase);
+                        args.put("id", 13);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     try {
                         websocket.sendText(getJsonReq("subscribe_balance_for", args.toString()));
+                        SystemClock.sleep(1000);
                         websocket.sendText(getJsonReq("subscribe_nonce_for", args.toString()));
+                        SystemClock.sleep(1000);
                         websocket.sendText(getJsonReq("get_runtime_version", "None"));
+                        SystemClock.sleep(1000);
                         websocket.sendText(getJsonReq("get_genesis_hash", ""));
+                        SystemClock.sleep(1000);
                         Log.i(TAG, "all subscriptions sent");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    */
+
                 }
             });
 
@@ -163,27 +204,20 @@ public class EncointerActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (ws != null) {
-            ws.disconnect();
-            ws = null;
+    public void sendRpcRequest(String request, int id) {
+        JSONObject args = new JSONObject();
+        try {
+            args.put("phrase", account_phrase);
+            args.put("id", id);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
-            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
-        }
-
+        String reqjson = getJsonReq(request, args.toString());
+        Log.i(TAG,"sending rpc request: "+ reqjson);
+        ws.sendText(reqjson);
     }
 
     public void startCeremony(View view) {
@@ -207,6 +241,11 @@ public class EncointerActivity extends AppCompatActivity {
         String url = editText_url.getText().toString();
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         sharedPref.edit().putString("node_ws_url", url).apply();
+        if (ws != null) {
+            ws.disconnect();
+            ws = null;
+        }
+        startWebsocket(url);
     }
 
     /** Returns true if the app was granted all the permissions. Otherwise, returns false. */

@@ -59,26 +59,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_encointer_logo_final" />
 
-    <TextView
-        android:id="@+id/dummyTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="somecowfonque"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_send" />
-
     <Button
         android:id="@+id/button_send"
         android:layout_width="198dp"
         android:layout_height="46dp"
         android:onClick="sendExtrinsic"
         android:text="send tx"
-        app:layout_constraintBottom_toTopOf="@+id/dummyTextView"
+        app:layout_constraintBottom_toTopOf="@+id/block_number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_url" />
 
@@ -97,22 +86,26 @@
 
     <TextView
         android:id="@+id/block_number"
-        android:layout_width="388dp"
-        android:layout_height="28dp"
+        android:layout_width="347dp"
+        android:layout_height="25dp"
+        android:layout_marginBottom="16dp"
         android:text="block number: "
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dummyTextView" />
 
     <TextView
         android:id="@+id/account_address"
-        android:layout_width="245dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="19dp"
+        android:layout_width="344dp"
+        android:layout_height="31dp"
         android:text="myaddress"
-        app:layout_constraintBottom_toTopOf="@+id/editText_username"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toTopOf="@+id/block_number"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.514"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/button_send"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>
