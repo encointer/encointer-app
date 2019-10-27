@@ -161,7 +161,7 @@ public class EncointerActivity extends AppCompatActivity {
                                         .getJSONArray("changes");
                                 try {
                                     String bal = changes.getJSONArray(0).getString(1);
-                                    accountBalance = new BigInteger(bal.substring("0x".length()), 16);
+                                    accountBalance = from_little_endian_hexstring(bal);
                                 } catch (Exception e) {
                                     Log.w(TAG, "balance is null");
                                     accountBalance = new BigInteger("0");
@@ -175,7 +175,7 @@ public class EncointerActivity extends AppCompatActivity {
                                         .getJSONArray("changes");
                                 try {
                                     String noncestr = changes.getJSONArray(0).getString(1);
-                                    accountNonce = new BigInteger(noncestr.substring("0x".length()), 16);
+                                    accountNonce = from_little_endian_hexstring(noncestr);
                                 } catch (Exception e) {
                                     Log.w(TAG, "nonce is null");
                                     accountNonce = new BigInteger("0");
@@ -250,6 +250,18 @@ public class EncointerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    // TODO: unit test
+    public BigInteger from_little_endian_hexstring(String val) {
+        Log.i(TAG, "little endian input:"+val);
+        StringBuilder target = new StringBuilder();
+        for (int n = val.length()-2; n > 1; n=n-2) {
+            target.append(val.charAt(n));
+            target.append(val.charAt(n+1));
+        }
+        Log.i(TAG, "big endian output:"+target.toString());
+        return new BigInteger(target.toString(),16);
     }
 
     public void sendRpcRequest(String request, int id) {
