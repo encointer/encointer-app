@@ -190,37 +190,41 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             .unwrap()).collect()),
         _ => None,
     };
+    let id = match arg["id"].as_u32() {
+        Some(n) => n,
+        _ => 42,
+    };
     info!("getJsonReq: matching request: {}", request);
     let jsonreq = match request.as_str() {
         "subscribe_events" => {
             let key = storage_key_hash("System", "Events", None);
-            json_req::state_subscribe_storage(&key)
+            json_req::state_subscribe_storage_with_id(&key, id)
         }
         "subscribe_balance_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             let key = storage_key_hash("Balances", "FreeBalances", Some(AccountId::from(pair.public()).encode()));
-            json_req::state_subscribe_storage(&key)
+            json_req::state_subscribe_storage_with_id(&key, id)
         }
         "subscribe_nonce_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.public()).encode()));
-            json_req::state_subscribe_storage(&key)
+            json_req::state_subscribe_storage_with_id(&key, id)
         },
         "get_meetup_index_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             // FIXME: need to implement double_map for api-client first.
             let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", Some(AccountId::from(pair.public()).encode()));
-            json_req::state_get_storage(&key)
+            json_req::state_get_storage_with_id(&key, id)
         },
         "get_ceremony_index" => {
             let key = storage_key_hash("EncointerCeremonies", "CurrentCeremonyIndex", None);
-            json_req::state_get_storage(&key)
+            json_req::state_get_storage_with_id(&key, id)
         },
         "get_runtime_version" => {
-            json_req::state_get_runtime_version()
+            json_req::state_get_runtime_version_with_id(id)
         },
         "get_genesis_hash" => {
-            json_req::chain_get_block_hash()
+            json_req::chain_get_block_hash_with_id(id)
         },
         "bootstrap_funding" => {
             // TODO to be replaced by faucet
@@ -237,7 +241,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
                 genesis_hash,
                 spec_version
             );
-            json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
+            json_req::author_submit_and_watch_extrinsic_with_id(&xt.hex_encode(), id)
         },
         "register_participant" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
@@ -251,7 +255,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
                 genesis_hash,
                 spec_version
             );
-            json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
+            json_req::author_submit_and_watch_extrinsic_with_id(&xt.hex_encode(),id)
         },
         /*
         "register_witnesses" => {
@@ -268,7 +272,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
                 genesis_hash,
                 spec_version
             );
-            json_req::author_submit_and_watch_extrinsic(&xt.hex_encode())
+            json_req::author_submit_and_watch_extrinsic_with_id(&xt.hex_encode(),id)
         },
         */
         _ => {
