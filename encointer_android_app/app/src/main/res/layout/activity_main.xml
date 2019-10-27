@@ -50,11 +50,11 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="253dp"
-        android:layout_height="161dp"
+        android:layout_width="168dp"
+        android:layout_height="81dp"
         app:layout_constraintBottom_toTopOf="@+id/editText_username"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_encointer_logo_final" />
@@ -63,9 +63,10 @@
         android:id="@+id/button_send"
         android:layout_width="198dp"
         android:layout_height="46dp"
+        android:layout_marginTop="36dp"
         android:onClick="sendExtrinsic"
+
         android:text="send tx"
-        app:layout_constraintBottom_toTopOf="@+id/block_number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +81,6 @@
         android:text="url"
         app:layout_constraintBottom_toTopOf="@+id/button_send"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_start" />
 
@@ -88,24 +88,40 @@
         android:id="@+id/block_number"
         android:layout_width="347dp"
         android:layout_height="25dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:text="block number: "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dummyTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/account_nonce" />
 
     <TextView
         android:id="@+id/account_address"
-        android:layout_width="344dp"
-        android:layout_height="31dp"
+        android:layout_width="336dp"
+        android:layout_height="68dp"
         android:text="myaddress"
         android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@+id/block_number"
+        app:layout_constraintBottom_toTopOf="@+id/account_balance"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintHorizontal_bias="0.522"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_send"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.467" />
+
+    <TextView
+        android:id="@+id/account_balance"
+        android:layout_width="292dp"
+        android:layout_height="26dp"
+        android:text="balance: ?"
+        tools:layout_editor_absoluteX="59dp"
+        tools:layout_editor_absoluteY="481dp" />
+
+    <TextView
+        android:id="@+id/account_nonce"
+        android:layout_width="321dp"
+        android:layout_height="26dp"
+        android:text="nonce: ?"
+        tools:layout_editor_absoluteX="45dp"
+        tools:layout_editor_absoluteY="571dp" />
 
 </android.support.constraint.ConstraintLayout>

@@ -7,20 +7,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.annotation.CallSuper;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.neovisionaries.ws.client.*;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,9 +41,19 @@ public class EncointerActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
-    WebSocket ws = null;
-    String account_address = null;
-    String account_phrase = null;
+    WebSocket   ws = null;
+    String      accountAddress = null;
+    String      accountPhrase = null;
+    BigInteger  accountNonce = null;
+    BigInteger  aliceNonce = null;
+    BigInteger  accountBalance = null;
+    Integer     specVersion = null;
+    String      genesisHash = null;
+    Integer     subscriptionIdBlockHeaders = null;
+    Integer     subscriptionIdNonce = null;
+    Integer     subscriptionIdBalance = null;
+    Integer     subscriptionIdEvents = null;
+    Boolean     AliceHasPity = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +66,6 @@ public class EncointerActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-
 
         setContentView(R.layout.activity_main);
 
@@ -81,10 +85,10 @@ public class EncointerActivity extends AppCompatActivity {
         }
         try {
             JSONObject jsonObj = new JSONObject(sharedPref.getString("account", "error_no_account_found"));
-            account_address = jsonObj.getString("address");
-            account_phrase = jsonObj.getString("phrase");
-            TextView TextView_account_address = findViewById(R.id.account_address);
-            TextView_account_address.setText(account_address);
+            accountAddress = jsonObj.getString("address");
+            accountPhrase = jsonObj.getString("phrase");
+            TextView tv_account_address = findViewById(R.id.account_address);
+            tv_account_address.setText(accountAddress);
             Log.i(TAG, "successfully loaded account credentials");
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,33 +131,103 @@ public class EncointerActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonObj = new JSONObject(message);
                         if (jsonObj.has("method")) {
-                            switch (jsonObj.getString("method")) {
-                                case "chain_newHead":
-                                    String blockNrHex = jsonObj.getJSONObject("params")
-                                            .getJSONObject("result")
-                                            .getString("number");
-                                    BigInteger block_nr = new BigInteger(blockNrHex.substring("0x".length()), 16);
-                                    TextView tv_block_number = findViewById(R.id.block_number);
-                                    tv_block_number.setText(String.format("latest block number is %d", block_nr));
-                                    Log.i(TAG, String.format("latest block number is %s / %d", blockNrHex, block_nr));
-                                    break;
-                                case "state_storage":
-                                    JSONArray changes = jsonObj.getJSONObject("params")
-                                            .getJSONObject("result")
-                                            .getJSONArray("changes");
-                                    for (int n = 0; n < changes.length(); n++) {
-                                        if (changes.getJSONArray(n).getString(0)
-                                                .contentEquals("0xcc956bdb7605e3547539f321ac2bc95c")) {
-                                            String events = changes.getJSONArray(n).getString(1);
-                                            Log.i(TAG, "got event update: " + events);
-                                        }
+                            Integer subscription = jsonObj.getJSONObject("params")
+                                .getInt("subscription");
+                            if (subscription == subscriptionIdBlockHeaders) {
 
+                                String blockNrHex = jsonObj.getJSONObject("params")
+                                        .getJSONObject("result")
+                                        .getString("number");
+                                BigInteger block_nr = new BigInteger(blockNrHex.substring("0x".length()), 16);
+                                TextView tv_block_number = findViewById(R.id.block_number);
+                                tv_block_number.setText(String.format("latest block number is %d", block_nr));
+                                Log.i(TAG, String.format("latest block number is %s / %d", blockNrHex, block_nr));
+                            } else if (subscription == subscriptionIdEvents) {
+                                JSONArray changes = jsonObj.getJSONObject("params")
+                                        .getJSONObject("result")
+                                        .getJSONArray("changes");
+                                for (int n = 0; n < changes.length(); n++) {
+                                    if (changes.getJSONArray(n).getString(0)
+                                            .contentEquals("0xcc956bdb7605e3547539f321ac2bc95c")) {
+                                        String events = changes.getJSONArray(n).getString(1);
+                                        Log.i(TAG, "got event update: " + events);
                                     }
+
+                                }
+                            } else if (subscription == subscriptionIdBalance) {
+
+                                JSONArray changes = jsonObj.getJSONObject("params")
+                                        .getJSONObject("result")
+                                        .getJSONArray("changes");
+                                try {
+                                    String bal = changes.getJSONArray(0).getString(1);
+                                    accountBalance = new BigInteger(bal.substring("0x".length()), 16);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "balance is null");
+                                    accountBalance = new BigInteger("0");
+                                }
+                                TextView tv_account_balance = findViewById(R.id.account_balance);
+                                tv_account_balance.setText("Balance: " + accountBalance.toString());
+
+                            } else if (subscription == subscriptionIdNonce) {
+                                JSONArray changes = jsonObj.getJSONObject("params")
+                                        .getJSONObject("result")
+                                        .getJSONArray("changes");
+                                try {
+                                    String noncestr = changes.getJSONArray(0).getString(1);
+                                    accountNonce = new BigInteger(noncestr.substring("0x".length()), 16);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "nonce is null");
+                                    accountNonce = new BigInteger("0");
+                                }
+                                TextView tv_account_nonce = findViewById(R.id.account_nonce);
+                                tv_account_nonce.setText("Nonce: " + accountNonce.toString());
+
+                            }
+                        } else if (jsonObj.has("result")) {
+                            Log.d(TAG, "is a result");
+                            switch (jsonObj.getInt("id")) {
+                                case 11:
+                                    Log.d(TAG, "is block header subscription");
+                                    subscriptionIdBlockHeaders = jsonObj.getInt("result");
+                                    break;
+                                case 12:
+                                    Log.d(TAG, "is event subscription");
+                                    subscriptionIdEvents = jsonObj.getInt("result");
+                                    break;
+                                case 13:
+                                    Log.d(TAG, "is balance subscription");
+                                    subscriptionIdBalance = jsonObj.getInt("result");
+                                    break;
+                                case 14:
+                                    Log.d(TAG, "is nonce subscription");
+                                    subscriptionIdNonce = jsonObj.getInt("result");
+                                    break;
+                                case 15:
+                                    Log.d(TAG, "is runtime version");
+                                    specVersion = jsonObj.getJSONObject("result")
+                                            .getInt("specVersion");
+                                    break;
+                                case 16:
+                                    Log.d(TAG, "is genesis hash");
+                                    genesisHash = jsonObj.getString("result");
                                     break;
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+                    if (accountBalance != null) {
+                        if (accountBalance.compareTo(BigInteger.TEN) < 0) {
+                            if ((accountNonce != null)
+                                    && (genesisHash != null)
+                                    && (specVersion != null)
+                                    && (AliceHasPity)) {
+                                Log.i(TAG, "Alice has pity and sends you some");
+                                AliceHasPity = false;
+                                sendRpcRequest("bootstrap_funding", 27);
+                            }
+                        }
                     }
                 }
 
@@ -163,40 +237,11 @@ public class EncointerActivity extends AppCompatActivity {
                     System.loadLibrary("encointer_api_native");
                     Log.i(TAG, "subscribing to Alexander Block updates");
                     websocket.sendText("{\"id\":11,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
-
-                    sendRpcRequest("subscribe_events", 12);
-                    sendRpcRequest("subscribe_balance_for", 13);
                     sendRpcRequest("subscribe_nonce_for", 14);
                     sendRpcRequest("get_runtime_version", 15);
                     sendRpcRequest("get_genesis_hash", 16);
-/*
-                    //SystemClock.sleep(1000);
-                    //Log.i(TAG, "subscribing to Events");
-                    //websocket.sendText("{\"id\":\"12\",\"jsonrpc\":\"2.0\",\"method\":\"state_subscribeStorage\",\"params\":[[\"0xcc956bdb7605e3547539f321ac2bc95c\"]]}");
-                    SystemClock.sleep(1000);
-                    Log.i(TAG, "subscribing to balance");
-                    JSONObject args = new JSONObject();
-                    try {
-                        args.put("phrase", account_phrase);
-                        args.put("id", 13);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        websocket.sendText(getJsonReq("subscribe_balance_for", args.toString()));
-                        SystemClock.sleep(1000);
-                        websocket.sendText(getJsonReq("subscribe_nonce_for", args.toString()));
-                        SystemClock.sleep(1000);
-                        websocket.sendText(getJsonReq("get_runtime_version", "None"));
-                        SystemClock.sleep(1000);
-                        websocket.sendText(getJsonReq("get_genesis_hash", ""));
-                        SystemClock.sleep(1000);
-                        Log.i(TAG, "all subscriptions sent");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    */
-
+                    sendRpcRequest("subscribe_events", 12);
+                    sendRpcRequest("subscribe_balance_for", 13);
                 }
             });
 
@@ -210,8 +255,11 @@ public class EncointerActivity extends AppCompatActivity {
     public void sendRpcRequest(String request, int id) {
         JSONObject args = new JSONObject();
         try {
-            args.put("phrase", account_phrase);
+            args.put("phrase", accountPhrase);
             args.put("id", id);
+            args.put("genesis_hash", genesisHash);
+            args.put("spec_version", specVersion);
+            args.put("nonce", accountNonce);
         } catch (JSONException e) {
             e.printStackTrace();
         }
