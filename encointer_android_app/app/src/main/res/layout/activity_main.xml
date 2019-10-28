@@ -93,8 +93,8 @@
 
     <TextView
         android:id="@+id/block_number"
-        android:layout_width="369dp"
-        android:layout_height="24dp"
+        android:layout_width="333dp"
+        android:layout_height="23dp"
         android:text="block number: "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,8 +104,8 @@
 
     <TextView
         android:id="@+id/account_address"
-        android:layout_width="374dp"
-        android:layout_height="60dp"
+        android:layout_width="316dp"
+        android:layout_height="57dp"
         android:text="myaddress"
         android:textIsSelectable="true"
         app:layout_constraintBottom_toTopOf="@+id/account_balance"
@@ -116,8 +116,8 @@
 
     <TextView
         android:id="@+id/account_balance"
-        android:layout_width="373dp"
-        android:layout_height="27dp"
+        android:layout_width="320dp"
+        android:layout_height="30dp"
         android:text="balance: ?"
         app:layout_constraintBottom_toTopOf="@+id/account_nonce"
         app:layout_constraintEnd_toEndOf="parent"
@@ -127,7 +127,7 @@
 
     <TextView
         android:id="@+id/account_nonce"
-        android:layout_width="371dp"
+        android:layout_width="326dp"
         android:layout_height="25dp"
         android:text="nonce: ?"
         app:layout_constraintBottom_toTopOf="@+id/block_number"

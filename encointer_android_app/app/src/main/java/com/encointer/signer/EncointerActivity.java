@@ -89,7 +89,7 @@ public class EncointerActivity extends AppCompatActivity {
             accountPhrase = jsonObj.getString("phrase");
             TextView tv_account_address = findViewById(R.id.account_address);
             tv_account_address.setText(accountAddress);
-            Log.i(TAG, "successfully loaded account credentials");
+            Log.i(TAG, "successfully loaded account credentials for "+ accountAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,9 +139,8 @@ public class EncointerActivity extends AppCompatActivity {
                                         .getJSONObject("result")
                                         .getString("number");
                                 BigInteger block_nr = new BigInteger(blockNrHex.substring("0x".length()), 16);
-                                TextView tv_block_number = findViewById(R.id.block_number);
-                                tv_block_number.setText(String.format("latest block number is %d", block_nr));
                                 Log.i(TAG, String.format("latest block number is %s / %d", blockNrHex, block_nr));
+                                update_block_number(block_nr);
                             } else if (subscription == subscriptionIdEvents) {
                                 JSONArray changes = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
@@ -166,8 +165,7 @@ public class EncointerActivity extends AppCompatActivity {
                                     Log.w(TAG, "balance is null");
                                     accountBalance = new BigInteger("0");
                                 }
-                                TextView tv_account_balance = findViewById(R.id.account_balance);
-                                tv_account_balance.setText("Balance: " + accountBalance.toString());
+                                update_account_balance(accountBalance);
 
                             } else if (subscription == subscriptionIdNonce) {
                                 JSONArray changes = jsonObj.getJSONObject("params")
@@ -180,8 +178,7 @@ public class EncointerActivity extends AppCompatActivity {
                                     Log.w(TAG, "nonce is null");
                                     accountNonce = new BigInteger("0");
                                 }
-                                TextView tv_account_nonce = findViewById(R.id.account_nonce);
-                                tv_account_nonce.setText("Nonce: " + accountNonce.toString());
+                                update_account_nonce(accountNonce);
 
                             }
                         } else if (jsonObj.has("result")) {
@@ -250,6 +247,36 @@ public class EncointerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    public void update_account_balance(BigInteger value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv_account_balance = findViewById(R.id.account_balance);
+                tv_account_balance.setText("Balance: " + value.toString());
+            }
+        });
+    }
+
+    public void update_account_nonce(BigInteger value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv_account_nonce = findViewById(R.id.account_nonce);
+                tv_account_nonce.setText("Nonce: " + value.toString());
+            }
+        });
+    }
+
+    public void update_block_number(BigInteger value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv_block_number = findViewById(R.id.block_number);
+                tv_block_number.setText(String.format("latest block number is %d", value));
+            }
+        });
     }
 
     // TODO: unit test
