@@ -93,6 +93,24 @@ public class EncointerActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        ((EditText)findViewById(R.id.editText_url)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    EditText editText_url = findViewById(R.id.editText_url);
+                    String url = editText_url.getText().toString();
+                    sharedPref.edit().putString("node_ws_url", url).apply();
+                    if (ws != null) {
+                        ws.disconnect();
+                        ws = null;
+                    }
+                    startWebsocket(url);
+
+                }
+            }
+        });
+
         startWebsocket(node_ws_url);
     }
 
@@ -323,16 +341,8 @@ public class EncointerActivity extends AppCompatActivity {
         }
     }
 
-    public void sendExtrinsic(View view) {
-        EditText editText_url = findViewById(R.id.editText_url);
-        String url = editText_url.getText().toString();
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        sharedPref.edit().putString("node_ws_url", url).apply();
-        if (ws != null) {
-            ws.disconnect();
-            ws = null;
-        }
-        startWebsocket(url);
+    public void registerParticipant(View view) {
+        sendRpcRequest("register_participant", 31);
     }
 
     /** Returns true if the app was granted all the permissions. Otherwise, returns false. */

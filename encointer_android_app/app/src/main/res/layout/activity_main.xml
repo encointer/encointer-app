@@ -66,12 +66,12 @@
         app:srcCompat="@drawable/ic_encointer_logo_final" />
 
     <Button
-        android:id="@+id/button_send"
+        android:id="@+id/button_register"
         android:layout_width="198dp"
         android:layout_height="46dp"
-        android:onClick="sendExtrinsic"
+        android:onClick="registerParticipant"
 
-        android:text="send tx"
+        android:text="register"
         app:layout_constraintBottom_toTopOf="@+id/account_address"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -85,7 +85,7 @@
         android:ems="13"
         android:inputType="textPersonName"
         android:text="url"
-        app:layout_constraintBottom_toTopOf="@+id/button_send"
+        app:layout_constraintBottom_toTopOf="@+id/button_register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +112,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_send" />
+        app:layout_constraintTop_toBottomOf="@+id/button_register" />
 
     <TextView
         android:id="@+id/account_balance"
