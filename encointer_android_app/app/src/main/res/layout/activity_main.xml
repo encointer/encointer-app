@@ -6,168 +6,162 @@
     android:layout_height="match_parent"
     tools:context=".EncointerActivity">
 
+
     <Button
         android:id="@+id/button_start"
-        android:layout_width="218dp"
-        android:layout_height="63dp"
+        android:layout_width="165dp"
+        android:layout_height="52dp"
         android:onClick="startCeremony"
         android:text="@string/button_start_ceremony"
-        app:layout_constraintBottom_toTopOf="@+id/editText_url"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_username"
+        tools:layout_editor_absoluteX="102dp"
+        tools:layout_editor_absoluteY="225dp"
         tools:text="start meetup" />
-
-    <EditText
-        android:id="@+id/editText_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/hint_username"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/button_start"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintGuide_begin="20dp" />
 
     <android.support.constraint.Group
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:layout_editor_absoluteX="206dp"
+        tools:layout_editor_absoluteY="366dp" />
+
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="168dp"
         android:layout_height="81dp"
-        app:layout_constraintBottom_toTopOf="@+id/editText_username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_encointer_logo_final" />
+        app:srcCompat="@drawable/ic_encointer_logo_final"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="35dp" />
 
     <Button
         android:id="@+id/button_register"
-        android:layout_width="198dp"
-        android:layout_height="46dp"
+        android:layout_width="108dp"
+        android:layout_height="43dp"
         android:onClick="registerParticipant"
-
         android:text="register"
-        app:layout_constraintBottom_toTopOf="@+id/account_address"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_url" />
-
-    <EditText
-        android:id="@+id/editText_url"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="13"
-        android:inputType="textPersonName"
-        android:text="url"
-        app:layout_constraintBottom_toTopOf="@+id/button_register"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_start" />
-
-    <TextView
-        android:id="@+id/block_number"
-        android:layout_width="333dp"
-        android:layout_height="23dp"
-        android:text="block number: "
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_nonce" />
-
-    <TextView
-        android:id="@+id/account_address"
-        android:layout_width="316dp"
-        android:layout_height="57dp"
-        android:text="myaddress"
-        android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@+id/account_balance"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_register" />
-
-    <TextView
-        android:id="@+id/account_balance"
-        android:layout_width="320dp"
-        android:layout_height="30dp"
-        android:text="balance: ?"
-        app:layout_constraintBottom_toTopOf="@+id/account_nonce"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_address" />
-
-    <TextView
-        android:id="@+id/account_nonce"
-        android:layout_width="326dp"
-        android:layout_height="25dp"
-        android:text="nonce: ?"
-        app:layout_constraintBottom_toTopOf="@+id/block_number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_balance" />
+        tools:layout_editor_absoluteX="130dp"
+        tools:layout_editor_absoluteY="157dp" /><!-- android:enabled="false"-->
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintGuide_begin="20dp" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_begin="20dp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintGuide_begin="20dp" />
 
     <android.support.constraint.Constraints
         android:id="@+id/constraints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="206dp"
+        tools:layout_editor_absoluteY="366dp" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:stretchColumns="*"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:layout_editor_absoluteX="0dp">
+
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="node url" />
+
+            <EditText
+                android:id="@+id/editText_url"
+                android:ems="13"
+                android:inputType="textPersonName"
+                android:text="url"
+            />
+
+        </TableRow>
+
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Nickname" />
+            <EditText
+                android:id="@+id/editText_username"
+                android:ems="10"
+                android:hint="@string/hint_username"
+                android:inputType="textPersonName"
+            />
+
+        </TableRow>
+
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Account" />
+
+            <TextView
+                android:id="@+id/account_address"
+                android:text="myaddress"
+                android:textIsSelectable="true" />
+        </TableRow>
+
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Balance" />
+
+            <TextView
+                android:id="@+id/account_balance"
+                android:text="none" />
+        </TableRow>
+
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Nonce" />
+
+            <TextView
+                android:id="@+id/account_nonce"
+                android:text="none" />
+        </TableRow>
+
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Block Number" />
+
+            <TextView
+                android:id="@+id/block_number"
+                android:text="none" />
+        </TableRow>
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Ceremony Phase" />
+
+            <TextView
+                android:id="@+id/ceremony_phase"
+                android:text="none" />
+        </TableRow>
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Ceremony Index" />
+
+            <TextView
+                android:id="@+id/ceremony_index"
+                android:text="none" />
+        </TableRow>
+        <TableRow android:padding="5dip">
+
+            <TextView android:text="Meetup Index" />
+
+            <TextView
+                android:id="@+id/meetup_index"
+                android:text="not registered" />
+        </TableRow>
+    </TableLayout>
 
 </android.support.constraint.ConstraintLayout>
