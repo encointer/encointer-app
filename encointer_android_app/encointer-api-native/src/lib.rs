@@ -31,9 +31,10 @@ use substrate_api_client::{
     Api,
     compose_extrinsic_offline,
     extrinsic, 
-    extrinsic::xt_primitives::{AccountId, UncheckedExtrinsicV3},
+    extrinsic::xt_primitives::{AccountId, UncheckedExtrinsicV3, 
+        GenericExtra, SignedPayload, GenericAddress},
     rpc::json_req,
-    utils::{storage_key_hash, hexstr_to_hash},
+    utils::{storage_key_hash, storage_key_hash_double_map, hexstr_to_hash},
 };
 use codec::{Encode, Decode};
 use primitives::{
@@ -184,6 +185,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
     };        
     let spec_version: Option<u32> = arg["spec_version"].as_u32();
     let nonce: Option<u32> = arg["nonce"].as_u32();
+    let cindex: Option<CeremonyIndexType> = arg["cindex"].as_u32();
     let witnesses: Option<Vec<Witness<Signature, AccountId>>> = match &arg["witnesses"] {
         json::JsonValue::Array(w) => Some(w.iter().map(|x| 
             Decode::decode(&mut &hex::decode((*x).as_str().unwrap()).unwrap()[..])
@@ -202,7 +204,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         }
         "subscribe_balance_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
-            let key = storage_key_hash("Balances", "FreeBalances", Some(AccountId::from(pair.public()).encode()));
+            let key = storage_key_hash("Balances", "FreeBalance", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage_with_id(&key, id)
         }
         "subscribe_nonce_for" => {
@@ -210,14 +212,18 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage_with_id(&key, id)
         },
+        "subscribe_ceremony_index" => {
+            let key = storage_key_hash("EncointerCeremonies", "CurrentCeremonyIndex", None);
+            json_req::state_subscribe_storage_with_id(&key, id)
+        },
+        "subscribe_ceremony_phase" => {
+            let key = storage_key_hash("EncointerCeremonies", "CurrentPhase", None);
+            json_req::state_subscribe_storage_with_id(&key, id)
+        },
         "get_meetup_index_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
-            // FIXME: need to implement double_map for api-client first.
-            let key = storage_key_hash("EncointerCeremonies", "MeetupIndex", Some(AccountId::from(pair.public()).encode()));
-            json_req::state_get_storage_with_id(&key, id)
-        },
-        "get_ceremony_index" => {
-            let key = storage_key_hash("EncointerCeremonies", "CurrentCeremonyIndex", None);
+            let cindex = unwrap_or_return!(cindex, env, "ceremony index has to be specified");
+            let key = storage_key_hash_double_map("EncointerCeremonies", "MeetupIndex", cindex.encode(), AccountId::from(pair.public()).encode());
             json_req::state_get_storage_with_id(&key, id)
         },
         "get_runtime_version" => {
@@ -257,7 +263,6 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             );
             json_req::author_submit_and_watch_extrinsic_with_id(&xt.hex_encode(),id)
         },
-        /*
         "register_witnesses" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             let nonce = unwrap_or_return!(nonce, env, "nonce has to be specified");
@@ -267,14 +272,13 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
            
             let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
                 pair,
-                Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses)),
+                Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses.clone())),
                 nonce,
                 genesis_hash,
                 spec_version
             );
             json_req::author_submit_and_watch_extrinsic_with_id(&xt.hex_encode(),id)
         },
-        */
         _ => {
             error!("getJsonReq: unknown request: {}", request);
             serde_json::Value::default()
