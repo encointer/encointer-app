@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.neovisionaries.ws.client.*;
@@ -24,6 +25,7 @@ import java.math.BigInteger;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 
 public class EncointerActivity extends AppCompatActivity {
     private static final String TAG = "EncointerActivity";
@@ -229,7 +231,12 @@ public class EncointerActivity extends AppCompatActivity {
                             } else if (subscription == subscriptionIdRegisterParticipant) {
                                 if (jsonObj.getJSONObject("params")
                                         .getJSONObject("result").has("finalized")) {
-                                    //TODO: display notification or do some progress bar thing
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "registration has been finalized", Toast.LENGTH_SHORT ).show();
+                                        }
+                                    });
                                 }
                             }
                         } else if (jsonObj.has("result")) {
