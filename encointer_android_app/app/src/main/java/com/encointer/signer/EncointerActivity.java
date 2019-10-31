@@ -49,10 +49,15 @@ public class EncointerActivity extends AppCompatActivity {
     BigInteger  accountBalance = null;
     Integer     specVersion = null;
     String      genesisHash = null;
+    BigInteger  ceremonyPhase = null;
+    BigInteger  ceremonyIndex = null;
     Integer     subscriptionIdBlockHeaders = null;
     Integer     subscriptionIdNonce = null;
     Integer     subscriptionIdBalance = null;
     Integer     subscriptionIdEvents = null;
+    Integer     subscriptionIdCeremonyIndex = null;
+    Integer     subscriptionIdCeremonyPhase = null;
+    Integer     subscriptionIdRegisterParticipant = null;
     Boolean     AliceHasPity = true;
 
     @Override
@@ -197,7 +202,35 @@ public class EncointerActivity extends AppCompatActivity {
                                     accountNonce = new BigInteger("0");
                                 }
                                 update_account_nonce(accountNonce);
-
+                            } else if (subscription == subscriptionIdCeremonyPhase) {
+                                JSONArray changes = jsonObj.getJSONObject("params")
+                                        .getJSONObject("result")
+                                        .getJSONArray("changes");
+                                try {
+                                    String resstr = changes.getJSONArray(0).getString(1);
+                                    ceremonyPhase = from_little_endian_hexstring(resstr);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "CeremonyPhase is null");
+                                    ceremonyPhase = new BigInteger("0");
+                                }
+                                update_ceremony_phase(ceremonyPhase);
+                            } else if (subscription == subscriptionIdCeremonyIndex) {
+                                JSONArray changes = jsonObj.getJSONObject("params")
+                                        .getJSONObject("result")
+                                        .getJSONArray("changes");
+                                try {
+                                    String resstr = changes.getJSONArray(0).getString(1);
+                                    ceremonyIndex = from_little_endian_hexstring(resstr);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "CeremonyPhase is null");
+                                    ceremonyIndex = new BigInteger("0");
+                                }
+                                update_ceremony_index(ceremonyIndex);
+                            } else if (subscription == subscriptionIdRegisterParticipant) {
+                                if (jsonObj.getJSONObject("params")
+                                        .getJSONObject("result").has("finalized")) {
+                                    //TODO: display notification or do some progress bar thing
+                                }
                             }
                         } else if (jsonObj.has("result")) {
                             Log.d(TAG, "is a result");
@@ -226,6 +259,18 @@ public class EncointerActivity extends AppCompatActivity {
                                 case 16:
                                     Log.d(TAG, "is genesis hash");
                                     genesisHash = jsonObj.getString("result");
+                                    break;
+                                case 17:
+                                    Log.d(TAG, "is ceremony index subscription");
+                                    subscriptionIdCeremonyIndex = jsonObj.getInt("result");
+                                    break;
+                                case 18:
+                                    Log.d(TAG, "is ceremony phase subscription");
+                                    subscriptionIdCeremonyPhase = jsonObj.getInt("result");
+                                    break;
+                                case 31:
+                                    Log.d(TAG, "is subscription for register_participant xt");
+                                    subscriptionIdRegisterParticipant = jsonObj.getInt("result");
                                     break;
                             }
                         }
@@ -257,6 +302,8 @@ public class EncointerActivity extends AppCompatActivity {
                     sendRpcRequest("get_genesis_hash", 16);
                     sendRpcRequest("subscribe_events", 12);
                     sendRpcRequest("subscribe_balance_for", 13);
+                    sendRpcRequest("subscribe_ceremony_index", 17);
+                    sendRpcRequest("subscribe_ceremony_phase", 18);
                 }
             });
 
@@ -293,6 +340,26 @@ public class EncointerActivity extends AppCompatActivity {
             public void run() {
                 TextView tv_block_number = findViewById(R.id.block_number);
                 tv_block_number.setText(String.format("latest block number is %d", value));
+            }
+        });
+    }
+
+    public void update_ceremony_phase(BigInteger value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv_block_number = findViewById(R.id.ceremony_phase);
+                tv_block_number.setText(value.toString());
+            }
+        });
+    }
+
+    public void update_ceremony_index(BigInteger value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv_block_number = findViewById(R.id.ceremony_index);
+                tv_block_number.setText(value.toString());
             }
         });
     }

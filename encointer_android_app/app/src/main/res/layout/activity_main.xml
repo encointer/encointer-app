@@ -13,8 +13,11 @@
         android:layout_height="52dp"
         android:onClick="startCeremony"
         android:text="@string/button_start_ceremony"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="225dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_register"
         tools:text="start meetup" />
 
     <android.support.constraint.Guideline
@@ -36,9 +39,12 @@
         android:id="@+id/imageView"
         android:layout_width="168dp"
         android:layout_height="81dp"
-        app:srcCompat="@drawable/ic_encointer_logo_final"
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="35dp" />
+        app:layout_constraintBottom_toTopOf="@+id/button_register"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_encointer_logo_final" />
 
     <Button
         android:id="@+id/button_register"
@@ -46,8 +52,11 @@
         android:layout_height="43dp"
         android:onClick="registerParticipant"
         android:text="register"
-        tools:layout_editor_absoluteX="130dp"
-        tools:layout_editor_absoluteY="157dp" /><!-- android:enabled="false"-->
+        app:layout_constraintBottom_toTopOf="@+id/button_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" /><!-- android:enabled="false"-->
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
@@ -71,6 +80,7 @@
         tools:layout_editor_absoluteY="366dp" />
 
     <TableLayout
+        android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="380dp"
         android:stretchColumns="*"
@@ -85,20 +95,19 @@
                 android:id="@+id/editText_url"
                 android:ems="13"
                 android:inputType="textPersonName"
-                android:text="url"
-            />
+                android:text="url" />
 
         </TableRow>
 
         <TableRow android:padding="5dip">
 
             <TextView android:text="Nickname" />
+
             <EditText
                 android:id="@+id/editText_username"
                 android:ems="10"
                 android:hint="@string/hint_username"
-                android:inputType="textPersonName"
-            />
+                android:inputType="textPersonName" />
 
         </TableRow>
 
@@ -138,6 +147,7 @@
                 android:id="@+id/block_number"
                 android:text="none" />
         </TableRow>
+
         <TableRow android:padding="5dip">
 
             <TextView android:text="Ceremony Phase" />
@@ -146,6 +156,7 @@
                 android:id="@+id/ceremony_phase"
                 android:text="none" />
         </TableRow>
+
         <TableRow android:padding="5dip">
 
             <TextView android:text="Ceremony Index" />
@@ -154,6 +165,7 @@
                 android:id="@+id/ceremony_index"
                 android:text="none" />
         </TableRow>
+
         <TableRow android:padding="5dip">
 
             <TextView android:text="Meetup Index" />
