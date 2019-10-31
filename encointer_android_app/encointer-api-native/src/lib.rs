@@ -209,7 +209,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         }
         "subscribe_nonce_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
-            let key = storage_key_hash("System", "AccountNone", Some(AccountId::from(pair.public()).encode()));
+            let key = storage_key_hash("System", "AccountNonce", Some(AccountId::from(pair.public()).encode()));
             json_req::state_subscribe_storage_with_id(&key, id)
         },
         "subscribe_ceremony_index" => {
