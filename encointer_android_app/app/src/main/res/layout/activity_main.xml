@@ -12,13 +12,14 @@
         android:layout_width="165dp"
         android:layout_height="52dp"
         android:onClick="startCeremony"
-        android:text="@string/button_start_ceremony"
+        android:text="start meetup"
+        android:enabled="false"
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_register"
-        tools:text="start meetup" />
+        />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -56,7 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" /><!-- android:enabled="false"-->
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"

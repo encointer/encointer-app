@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,11 @@ import java.util.Map;
 public class EncointerActivity extends AppCompatActivity {
     private static final String TAG = "EncointerActivity";
     public static final String EXTRA_USERNAME = "com.encointer.signer.USERNAME";
+
+    public static final int CEREMONY_PHASE_REGISTERING = 0;
+    public static final int CEREMONY_PHASE_ASSIGNING = 1;
+    public static final int CEREMONY_PHASE_WITNESSING = 2;
+
 
     private static final String[] REQUIRED_PERMISSIONS =
             new String[]{
@@ -356,7 +362,25 @@ public class EncointerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 TextView tv_block_number = findViewById(R.id.ceremony_phase);
-                tv_block_number.setText(value.toString());
+                Button register_button = (Button) findViewById(R.id.button_register);
+                Button start_button = (Button) findViewById(R.id.button_start);
+                switch (value.intValue()) {
+                    case CEREMONY_PHASE_REGISTERING:
+                        tv_block_number.setText("REGISTERING");
+                        register_button.setEnabled(true);
+                        start_button.setEnabled(false);
+                        break;
+                    case CEREMONY_PHASE_ASSIGNING:
+                        tv_block_number.setText("ASSIGNING");
+                        register_button.setEnabled(false);
+                        start_button.setEnabled(false);
+                        break;
+                    case CEREMONY_PHASE_WITNESSING:
+                        tv_block_number.setText("WITNESSING");
+                        register_button.setEnabled(false);
+                        start_button.setEnabled(true);
+                        break;
+                }
             }
         });
     }
