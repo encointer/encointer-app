@@ -11,6 +11,8 @@ public class PersonCounter extends AppCompatActivity {
 
     public static final String EXTRA_PERSON_COUNTER = "com.encointer.signer.EXTRA_PERSON_COUNTER";
     public static final String EXTRA_USERNAME = "com.encointer.signer.USERNAME";
+    public static final String EXTRA_CEREMONY_INDEX = "com.encointer.signer.CEREMONY_INDEX";
+    public static final String EXTRA_MEETUP_INDEX = "com.encointer.signer.MEETUP_INDEX";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

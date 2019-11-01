@@ -31,6 +31,8 @@ import java.util.Map;
 public class EncointerActivity extends AppCompatActivity {
     private static final String TAG = "EncointerActivity";
     public static final String EXTRA_USERNAME = "com.encointer.signer.USERNAME";
+    public static final String EXTRA_CEREMONY_INDEX = "com.encointer.signer.CEREMONY_INDEX";
+    public static final String EXTRA_MEETUP_INDEX = "com.encointer.signer.MEETUP_INDEX";
 
     public static final int CEREMONY_PHASE_REGISTERING = 0;
     public static final int CEREMONY_PHASE_ASSIGNING = 1;
@@ -59,10 +61,12 @@ public class EncointerActivity extends AppCompatActivity {
     String      genesisHash = null;
     BigInteger  ceremonyPhase = null;
     BigInteger  ceremonyIndex = null;
+    BigInteger  meetupIndex = null;
     Integer     subscriptionIdBlockHeaders = null;
     Integer     subscriptionIdNonce = null;
     Integer     subscriptionIdBalance = null;
     Integer     subscriptionIdEvents = null;
+    Integer     subscriptionIdMeetupIndex = null;
     Integer     subscriptionIdCeremonyIndex = null;
     Integer     subscriptionIdCeremonyPhase = null;
     Integer     subscriptionIdRegisterParticipant = null;
@@ -120,6 +124,21 @@ public class EncointerActivity extends AppCompatActivity {
                     }
                     startWebsocket(url);
 
+                }
+            }
+        });
+        ((EditText)findViewById(R.id.editText_username)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    EditText editText_username = findViewById(R.id.editText_username);
+                    String username = editText_username.getText().toString();
+                    if (username.length() == 0) {
+                        editText_username.setError("Please enter a valid username!");
+                    } else {
+                        sharedPref.edit().putString("username", username).apply();
+                    }
                 }
             }
         });
@@ -285,6 +304,13 @@ public class EncointerActivity extends AppCompatActivity {
                                     Log.d(TAG, "is subscription for register_participant xt");
                                     subscriptionIdRegisterParticipant = jsonObj.getInt("result");
                                     break;
+                                case 32:
+                                    Log.d(TAG, "is meetup index");
+                                    String resstr = jsonObj.getString("result");
+                                    meetupIndex = from_little_endian_hexstring(resstr);
+                                    update_meetup_index(meetupIndex);
+                                    break;
+
                             }
                         }
                     } catch (Exception e) {
@@ -332,7 +358,7 @@ public class EncointerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 TextView tv_account_balance = findViewById(R.id.account_balance);
-                tv_account_balance.setText("Balance: " + value.toString());
+                tv_account_balance.setText(value.toString());
             }
         });
     }
@@ -342,7 +368,7 @@ public class EncointerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 TextView tv_account_nonce = findViewById(R.id.account_nonce);
-                tv_account_nonce.setText("Nonce: " + value.toString());
+                tv_account_nonce.setText(value.toString());
             }
         });
     }
@@ -352,7 +378,17 @@ public class EncointerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 TextView tv_block_number = findViewById(R.id.block_number);
-                tv_block_number.setText(String.format("latest block number is %d", value));
+                tv_block_number.setText(value.toString());
+            }
+        });
+    }
+
+    public void update_meetup_index(BigInteger value) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv_block_number = findViewById(R.id.meetup_index);
+                tv_block_number.setText(value.toString());
             }
         });
     }
@@ -369,6 +405,7 @@ public class EncointerActivity extends AppCompatActivity {
                         tv_block_number.setText("REGISTERING");
                         register_button.setEnabled(true);
                         start_button.setEnabled(false);
+                        meetupIndex = null;
                         break;
                     case CEREMONY_PHASE_ASSIGNING:
                         tv_block_number.setText("ASSIGNING");
@@ -377,6 +414,7 @@ public class EncointerActivity extends AppCompatActivity {
                         break;
                     case CEREMONY_PHASE_WITNESSING:
                         tv_block_number.setText("WITNESSING");
+                        sendRpcRequest("get_meetup_index_for", 32);
                         register_button.setEnabled(false);
                         start_button.setEnabled(true);
                         break;
@@ -391,6 +429,7 @@ public class EncointerActivity extends AppCompatActivity {
             public void run() {
                 TextView tv_block_number = findViewById(R.id.ceremony_index);
                 tv_block_number.setText(value.toString());
+                sendRpcRequest("get_meetup_index_for", 32);
             }
         });
     }
@@ -398,6 +437,9 @@ public class EncointerActivity extends AppCompatActivity {
     // TODO: unit test
     public BigInteger from_little_endian_hexstring(String val) {
         Log.i(TAG, "little endian input:"+val);
+        if (val == "null") {
+            return BigInteger.ZERO;
+        }
         StringBuilder target = new StringBuilder();
         for (int n = val.length()-2; n > 1; n=n-2) {
             target.append(val.charAt(n));
@@ -414,6 +456,7 @@ public class EncointerActivity extends AppCompatActivity {
             args.put("id", id);
             args.put("genesis_hash", genesisHash);
             args.put("spec_version", specVersion);
+            args.put("cindex", ceremonyIndex);
             args.put("nonce", accountNonce);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -424,19 +467,16 @@ public class EncointerActivity extends AppCompatActivity {
     }
 
     public void startCeremony(View view) {
-        Intent intent = new Intent(this, PersonCounter.class);
-        EditText editText_username = findViewById(R.id.editText_username);
-        String username = editText_username.getText().toString();
-
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        sharedPref.edit().putString("username", username).apply();
-
-        if (username.length() == 0) {
-            editText_username.setError("Please enter a valid username!");
-        } else {
-            intent.putExtra(EXTRA_USERNAME, username);
-            startActivity(intent);
+        if (meetupIndex == null) {
+            Toast.makeText(getApplicationContext(), "can't start ceremony before knowing meetup index", Toast.LENGTH_SHORT ).show();
+            return;
         }
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Intent intent = new Intent(this, PersonCounter.class);
+        intent.putExtra(EXTRA_USERNAME, sharedPref.getString("username","dummy"));
+        intent.putExtra(EXTRA_CEREMONY_INDEX, ceremonyIndex);
+        intent.putExtra(EXTRA_MEETUP_INDEX, meetupIndex);
+        startActivity(intent);
     }
 
     public void registerParticipant(View view) {
