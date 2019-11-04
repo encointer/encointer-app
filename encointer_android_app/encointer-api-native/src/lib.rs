@@ -89,6 +89,16 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_initNativeLogge
 } 
 
 #[no_mangle]
+pub unsafe extern fn Java_com_encointer_signer_DeviceList_initNativeLogger(env: JNIEnv, _: JObject) {
+    android_logger::init_once(
+        Config::default()
+            .with_min_level(Level::Trace) // limit log level
+            .with_tag("encointer-api-native") // logs will show under mytag tag
+    );
+    info!("native logger initialized");
+} 
+
+#[no_mangle]
 pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_mustThrowException(env: JNIEnv, _: JObject) {
     env.throw_new(RUNTIME_EXCEPTION_CLASS, "always throwing error for testing").unwrap(); 
 }
@@ -109,29 +119,21 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newAccount(env:
 }
 
 #[no_mangle]
-pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newClaim(env: JNIEnv, _: JObject, j_arg: JString) -> jstring {
+pub unsafe extern fn Java_com_encointer_signer_DeviceList_newClaim(env: JNIEnv, _: JObject, j_arg: JString) -> jstring {
     let arg = parse_json_j!(j_arg, env);
     info!("newClaim called with args {}", arg.dump());
     let pair: Option<sr25519::Pair> = match arg["phrase"].as_str() {
         Some(p) => Some(sr25519::Pair::from_phrase(p, None).unwrap().0),
         None => None,
     };
-    let cindex: Option<CeremonyIndexType> = match arg["ceremony_index"].as_str() {
-        Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
-        None => None,
-    };
-    let mindex: Option<MeetupIndexType> = match arg["meetup_index"].as_str() {
-        Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
-        None => None,
-    };
-    let n_participants: Option<CeremonyIndexType> = match arg["n_participants"].as_str() {
-        Some(x) => Some(Decode::decode(&mut &hex::decode(x).unwrap()[..]).unwrap()),
-        None => None,
-    };
-    let pair = pair.expect("pair is specified");
-    let cindex = cindex.expect("ceremony index is specified");
-    let mindex = mindex.expect("meetup index is specified");
-    let n_participants = n_participants.expect("n participants is specified");
+    let cindex: Option<CeremonyIndexType> = arg["ceremony_index"].as_u32();
+    let mindex: Option<MeetupIndexType> = arg["meetup_index"].as_u64();
+    let n_participants: Option<u32> = arg["n_participants"].as_u32();
+
+    let pair = unwrap_or_return!(pair, env, "pair is specified");
+    let cindex = unwrap_or_return!(cindex, env, "ceremony index is specified");
+    let mindex = unwrap_or_return!(mindex, env, "meetup index is specified");
+    let n_participants = unwrap_or_return!(n_participants, env, "n participants is specified");
 
     let claim = ClaimOfAttendance::<AccountId> {
 		claimant_public: pair.public().into(),
@@ -144,7 +146,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_newClaim(env: J
 }
 
 #[no_mangle]
-pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_signClaim(env: JNIEnv, _: JObject, j_arg: JString) -> jstring {
+pub unsafe extern fn Java_com_encointer_signer_DeviceList_signClaim(env: JNIEnv, _: JObject, j_arg: JString) -> jstring {
     info!("signClaim called");
     let arg = parse_json_j!(j_arg, env);
     info!("signClaim called with args {}", arg.dump());
@@ -156,8 +158,8 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_signClaim(env: 
         Some(c) => Some(Decode::decode(&mut &hex::decode(c).unwrap()[..]).unwrap()),
         None => None,
     };
-    let pair = pair.expect("pair is specified");
-    let claim = claim.expect("claim is specified");
+    let pair = unwrap_or_return!(pair, env, "pair has to be specified");
+    let claim = unwrap_or_return!(claim, env, "claim is specified");
     let witness = Witness { 
         claim: claim.clone(),
         signature: Signature::from(pair.sign(&claim.encode())),
@@ -185,7 +187,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
     };        
     let spec_version: Option<u32> = arg["spec_version"].as_u32();
     let nonce: Option<u32> = arg["nonce"].as_u32();
-    let cindex: Option<CeremonyIndexType> = arg["cindex"].as_u32();
+    let cindex: Option<CeremonyIndexType> = arg["ceremony_index"].as_u32();
     let witnesses: Option<Vec<Witness<Signature, AccountId>>> = match &arg["witnesses"] {
         json::JsonValue::Array(w) => Some(w.iter().map(|x| 
             Decode::decode(&mut &hex::decode((*x).as_str().unwrap()).unwrap()[..])
