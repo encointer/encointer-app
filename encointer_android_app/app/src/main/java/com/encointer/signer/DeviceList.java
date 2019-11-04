@@ -1,9 +1,12 @@
 package com.encointer.signer;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,6 +50,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.RSAKeyGenParameterSpec;
 //import java.time.LocalDateTime;
+import org.json.JSONObject;
 import org.threeten.bp.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,10 +59,13 @@ import java.util.List;
 public class DeviceList extends AppCompatActivity {
 
     private static final String TAG = "EncointerSigner";
-    public static final String EXTRA_USERNAME = "com.encointer.signer.USERNAME";
+
+    public static final String EXTRA_ARGS = "com.encointer.signer.ARGS";
 
     private Integer PERSON_COUNTER;
     private String USERNAME;
+    private String ARGS;
+    private String claim;
 
     private Integer foundDevices = 0;
     private Integer signatureCounter = 0;
@@ -80,6 +87,29 @@ public class DeviceList extends AppCompatActivity {
     private PublicKey mPublicKey;
     private PrivateKey mPrivateKey;
 
+    EncointerChain encointerChainService;
+    boolean encointerChainBound = false;
+
+    private ServiceConnection encointerChainConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            EncointerChain.EncointerChainBinder binder = (EncointerChain.EncointerChainBinder) service;
+            encointerChainService = binder.getService();
+            encointerChainBound = true;
+            Log.i(TAG,"requesting new claim with data: "+ ARGS);
+            claim = encointerChainService.newClaim(ARGS);
+            Log.i(TAG, "new claim created: "+ claim);
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            encointerChainBound = false;
+        }
+    };
 
     // Invoked when nearby advertisers are discovered or lost
     // Requests a connection with a device as soon as it is discovered
@@ -193,8 +223,17 @@ public class DeviceList extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        PERSON_COUNTER = Integer.parseInt(intent.getStringExtra(PersonCounter.EXTRA_PERSON_COUNTER)) - 1;
-        USERNAME = intent.getStringExtra(PersonCounter.EXTRA_USERNAME);
+
+        ARGS = intent.getStringExtra(EXTRA_ARGS);
+
+        try {
+            JSONObject args = new JSONObject(ARGS);
+            PERSON_COUNTER = args.getInt("n_participants") - 1;
+            USERNAME = args.getString("username");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         ImageView imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         imageViewUser.setImageBitmap(Identicon.create(USERNAME));
 
@@ -306,7 +345,7 @@ public class DeviceList extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             // Go back one screen where one can enter the number of attendees
                             Intent intent = new Intent(DeviceList.this, DeviceList.class);
-                            intent.putExtra(EXTRA_USERNAME, USERNAME);
+                            intent.putExtra(EXTRA_ARGS, ARGS);
                             startActivity(intent);
                         }
                     })

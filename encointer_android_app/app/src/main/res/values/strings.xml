@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">encointer</string>
     <string name="button_start_ceremony">Start</string>
-    <string name="textView_people_counter">How many People attend the meeting?</string>
+    <string name="textView_people_counter">How many People attend the meeting? (Including yourself)</string>
     <string name="hint_people_counter">Number of People</string>
     <string name="button_people_counter">Confirm</string>
     <string name="textView_collected_signatures">Signatures collected: ?</string>

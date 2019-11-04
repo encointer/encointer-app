@@ -2,11 +2,15 @@ package com.encointer.signer;
 
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -30,9 +34,7 @@ import java.util.Map;
 
 public class EncointerActivity extends AppCompatActivity {
     private static final String TAG = "EncointerActivity";
-    public static final String EXTRA_USERNAME = "com.encointer.signer.USERNAME";
-    public static final String EXTRA_CEREMONY_INDEX = "com.encointer.signer.CEREMONY_INDEX";
-    public static final String EXTRA_MEETUP_INDEX = "com.encointer.signer.MEETUP_INDEX";
+    public static final String EXTRA_ARGS = "com.encointer.signer.ARGS";
 
     public static final int CEREMONY_PHASE_REGISTERING = 0;
     public static final int CEREMONY_PHASE_ASSIGNING = 1;
@@ -51,6 +53,9 @@ public class EncointerActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
+    EncointerChainApi chainApi = null;
+
+    String      node_ws_url = null;
     WebSocket   ws = null;
     String      accountAddress = null;
     String      accountPhrase = null;
@@ -72,17 +77,34 @@ public class EncointerActivity extends AppCompatActivity {
     Integer     subscriptionIdRegisterParticipant = null;
     Boolean     AliceHasPity = true;
 
+
+    EncointerChain encointerChainService;
+    boolean encointerChainBound = false;
+
+    private ServiceConnection encointerChainConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            EncointerChain.EncointerChainBinder binder = (EncointerChain.EncointerChainBinder) service;
+            encointerChainService = binder.getService();
+            encointerChainBound = true;
+            startWebsocket(node_ws_url);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            encointerChainBound = false;
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
-        System.loadLibrary("encointer_api_native");
-        initNativeLogger();
-        /*try {
-            mustThrowException();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+
+        chainApi = new EncointerChainApi();
 
         setContentView(R.layout.activity_main);
 
@@ -92,13 +114,13 @@ public class EncointerActivity extends AppCompatActivity {
         EditText editText_username = findViewById(R.id.editText_username);
         editText_username.setText(sharedPref.getString("username", "myusername"));
         EditText editText_url = findViewById(R.id.editText_url);
-        String node_ws_url = sharedPref.getString("node_ws_url", "wss://poc3-rpc.polkadot.io/");
+        node_ws_url = sharedPref.getString("node_ws_url", "wss://poc3-rpc.polkadot.io/");
         editText_url.setText(node_ws_url);
 
         if (sharedPref.contains("account") == false) {
             Log.i(TAG, "no previously used account found. generating a new one");
             //sharedPref.edit().putString("account", "{\"phrase\": \"one two three\", \"address\": \"f5zhsAEDc\", \"pair\": \"0x1234\"}").apply();
-            sharedPref.edit().putString("account", newAccount()).apply();
+            sharedPref.edit().putString("account", chainApi.newAccount()).apply();
         }
         try {
             JSONObject jsonObj = new JSONObject(sharedPref.getString("account", "error_no_account_found"));
@@ -143,7 +165,7 @@ public class EncointerActivity extends AppCompatActivity {
             }
         });
 
-        startWebsocket(node_ws_url);
+
     }
 
     @Override
@@ -165,11 +187,22 @@ public class EncointerActivity extends AppCompatActivity {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
         }
 
+        Intent intent = new Intent(this, EncointerChain.class);
+        bindService(intent, encointerChainConnection, Context.BIND_AUTO_CREATE);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(encointerChainConnection);
+        encointerChainBound = false;
+
+    }
+
 
     public void startWebsocket(String node_ws_url) {
         // Create a WebSocket factory and set 5000 milliseconds as a timeout
-        // value for socket connection.
+        // value for socket encointerChainConnection.
         WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(5000);
         // Create a WebSocket. The timeout value set above is used.
         try {
@@ -457,11 +490,12 @@ public class EncointerActivity extends AppCompatActivity {
             args.put("genesis_hash", genesisHash);
             args.put("spec_version", specVersion);
             args.put("cindex", ceremonyIndex);
+            args.put("mindex", meetupIndex);
             args.put("nonce", accountNonce);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String reqjson = getJsonReq(request, args.toString());
+        String reqjson = chainApi.getJsonReq(request, args.toString());
         Log.i(TAG,"sending rpc request: "+ reqjson);
         ws.sendText(reqjson);
     }
@@ -471,11 +505,24 @@ public class EncointerActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "can't start ceremony before knowing meetup index", Toast.LENGTH_SHORT ).show();
             return;
         }
+        if (encointerChainBound) {
+            encointerChainService.setAccountNonce();
+            int num = encointerChainService.getAccountNonce();
+            Toast.makeText(this, "number: " + num, Toast.LENGTH_SHORT).show();
+        }
+
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         Intent intent = new Intent(this, PersonCounter.class);
-        intent.putExtra(EXTRA_USERNAME, sharedPref.getString("username","dummy"));
-        intent.putExtra(EXTRA_CEREMONY_INDEX, ceremonyIndex);
-        intent.putExtra(EXTRA_MEETUP_INDEX, meetupIndex);
+        JSONObject args = new JSONObject();
+        try {
+            args.put("username", sharedPref.getString("username","dummy"));
+            args.put("phrase", accountPhrase);
+            args.put("cindex", ceremonyIndex);
+            args.put("mindex", meetupIndex);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        intent.putExtra(EXTRA_ARGS, args.toString());
         startActivity(intent);
     }
 
@@ -494,12 +541,6 @@ public class EncointerActivity extends AppCompatActivity {
         return true;
     }
 
-    private native String initNativeLogger();
-    private native String mustThrowException();
-    private native String newAccount();
-    private native String newClaim(String arg);
-    private native String signClaim(String arg);
-    private native String getJsonReq(String request, String arg);
 
 }
 

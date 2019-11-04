@@ -7,8 +7,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Required for websocket (native lib) to substrate -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Required for websocket (native lib) to substrate -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -18,9 +17,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.encointer.signer.DeviceList"></activity>
-        <activity android:name="com.encointer.signer.PersonCounter" />
-        <activity android:name="com.encointer.signer.EncointerActivity">
+        <service
+            android:name=".EncointerChain"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity android:name=".DeviceList" />
+        <activity android:name=".PersonCounter" />
+        <activity android:name=".EncointerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
