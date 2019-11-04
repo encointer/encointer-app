@@ -57,7 +57,7 @@ public class PersonCounter extends AppCompatActivity {
             Intent oldIntent = getIntent();
             try {
                 JSONObject args = new JSONObject(oldIntent.getStringExtra(EXTRA_ARGS));
-                args.put("n_participants", person_counter);
+                args.put("n_participants", Integer.valueOf(person_counter));
                 nextIntent.putExtra(EXTRA_ARGS, args.toString());
                 Log.i( "personcounter", "Args: " + args.toString());
 

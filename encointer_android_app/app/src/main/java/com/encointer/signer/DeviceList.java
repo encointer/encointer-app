@@ -87,30 +87,6 @@ public class DeviceList extends AppCompatActivity {
     private PublicKey mPublicKey;
     private PrivateKey mPrivateKey;
 
-    EncointerChain encointerChainService;
-    boolean encointerChainBound = false;
-
-    private ServiceConnection encointerChainConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            EncointerChain.EncointerChainBinder binder = (EncointerChain.EncointerChainBinder) service;
-            encointerChainService = binder.getService();
-            encointerChainBound = true;
-            Log.i(TAG,"requesting new claim with data: "+ ARGS);
-            claim = encointerChainService.newClaim(ARGS);
-            Log.i(TAG, "new claim created: "+ claim);
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            encointerChainBound = false;
-        }
-    };
-
     // Invoked when nearby advertisers are discovered or lost
     // Requests a connection with a device as soon as it is discovered
     private final EndpointDiscoveryCallback endpointDiscoveryCallback =
@@ -219,6 +195,10 @@ public class DeviceList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
+
+        System.loadLibrary("encointer_api_native");
+        //initNativeLogger();
+
         setContentView(R.layout.activity_device_list);
 
         // Get the Intent that started this activity and extract the string
@@ -230,6 +210,7 @@ public class DeviceList extends AppCompatActivity {
             JSONObject args = new JSONObject(ARGS);
             PERSON_COUNTER = args.getInt("n_participants") - 1;
             USERNAME = args.getString("username");
+            claim = newClaim(ARGS);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -534,4 +515,9 @@ public class DeviceList extends AppCompatActivity {
             mPrivateKey = (PrivateKey) keys.getPrivate();
         }
     }
+
+
+    public native String initNativeLogger();
+    public native String newClaim(String arg);
+    public native String signClaim(String arg);
 }

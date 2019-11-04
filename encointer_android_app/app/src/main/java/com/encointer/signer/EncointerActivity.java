@@ -53,8 +53,6 @@ public class EncointerActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
-    EncointerChainApi chainApi = null;
-
     String      node_ws_url = null;
     WebSocket   ws = null;
     String      accountAddress = null;
@@ -67,6 +65,7 @@ public class EncointerActivity extends AppCompatActivity {
     BigInteger  ceremonyPhase = null;
     BigInteger  ceremonyIndex = null;
     BigInteger  meetupIndex = null;
+
     Integer     subscriptionIdBlockHeaders = null;
     Integer     subscriptionIdNonce = null;
     Integer     subscriptionIdBalance = null;
@@ -75,36 +74,15 @@ public class EncointerActivity extends AppCompatActivity {
     Integer     subscriptionIdCeremonyIndex = null;
     Integer     subscriptionIdCeremonyPhase = null;
     Integer     subscriptionIdRegisterParticipant = null;
-    Boolean     AliceHasPity = true;
 
-
-    EncointerChain encointerChainService;
-    boolean encointerChainBound = false;
-
-    private ServiceConnection encointerChainConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            EncointerChain.EncointerChainBinder binder = (EncointerChain.EncointerChainBinder) service;
-            encointerChainService = binder.getService();
-            encointerChainBound = true;
-            startWebsocket(node_ws_url);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            encointerChainBound = false;
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
 
-        chainApi = new EncointerChainApi();
+        System.loadLibrary("encointer_api_native");
+        initNativeLogger();
 
         setContentView(R.layout.activity_main);
 
@@ -120,7 +98,7 @@ public class EncointerActivity extends AppCompatActivity {
         if (sharedPref.contains("account") == false) {
             Log.i(TAG, "no previously used account found. generating a new one");
             //sharedPref.edit().putString("account", "{\"phrase\": \"one two three\", \"address\": \"f5zhsAEDc\", \"pair\": \"0x1234\"}").apply();
-            sharedPref.edit().putString("account", chainApi.newAccount()).apply();
+            sharedPref.edit().putString("account", newAccount()).apply();
         }
         try {
             JSONObject jsonObj = new JSONObject(sharedPref.getString("account", "error_no_account_found"));
@@ -165,6 +143,7 @@ public class EncointerActivity extends AppCompatActivity {
             }
         });
 
+        startWebsocket(node_ws_url);
 
     }
 
@@ -186,17 +165,11 @@ public class EncointerActivity extends AppCompatActivity {
         if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
         }
-
-        Intent intent = new Intent(this, EncointerChain.class);
-        bindService(intent, encointerChainConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(encointerChainConnection);
-        encointerChainBound = false;
-
     }
 
 
@@ -208,6 +181,7 @@ public class EncointerActivity extends AppCompatActivity {
         try {
             ws = factory.createSocket(node_ws_url);
             ws.addListener(new WebSocketAdapter() {
+
                 @Override
                 public void onTextMessage(WebSocket websocket, String message) throws Exception {
                     Log.i(TAG, "onTextMessage: " + message);
@@ -216,7 +190,7 @@ public class EncointerActivity extends AppCompatActivity {
                         if (jsonObj.has("method")) {
                             Integer subscription = jsonObj.getJSONObject("params")
                                 .getInt("subscription");
-                            if (subscription == subscriptionIdBlockHeaders) {
+                            if (subscription.equals(subscriptionIdBlockHeaders)) {
 
                                 String blockNrHex = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
@@ -224,7 +198,7 @@ public class EncointerActivity extends AppCompatActivity {
                                 BigInteger block_nr = new BigInteger(blockNrHex.substring("0x".length()), 16);
                                 Log.i(TAG, String.format("latest block number is %s / %d", blockNrHex, block_nr));
                                 update_block_number(block_nr);
-                            } else if (subscription == subscriptionIdEvents) {
+                            } else if (subscription.equals(subscriptionIdEvents)) {
                                 JSONArray changes = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
                                         .getJSONArray("changes");
@@ -236,7 +210,7 @@ public class EncointerActivity extends AppCompatActivity {
                                     }
 
                                 }
-                            } else if (subscription == subscriptionIdBalance) {
+                            } else if (subscription.equals(subscriptionIdBalance)) {
 
                                 JSONArray changes = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
@@ -250,7 +224,7 @@ public class EncointerActivity extends AppCompatActivity {
                                 }
                                 update_account_balance(accountBalance);
 
-                            } else if (subscription == subscriptionIdNonce) {
+                            } else if (subscription.equals(subscriptionIdNonce)) {
                                 JSONArray changes = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
                                         .getJSONArray("changes");
@@ -262,7 +236,7 @@ public class EncointerActivity extends AppCompatActivity {
                                     accountNonce = new BigInteger("0");
                                 }
                                 update_account_nonce(accountNonce);
-                            } else if (subscription == subscriptionIdCeremonyPhase) {
+                            } else if (subscription.equals(subscriptionIdCeremonyPhase)) {
                                 JSONArray changes = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
                                         .getJSONArray("changes");
@@ -274,7 +248,7 @@ public class EncointerActivity extends AppCompatActivity {
                                     ceremonyPhase = new BigInteger("0");
                                 }
                                 update_ceremony_phase(ceremonyPhase);
-                            } else if (subscription == subscriptionIdCeremonyIndex) {
+                            } else if (subscription.equals(subscriptionIdCeremonyIndex)) {
                                 JSONArray changes = jsonObj.getJSONObject("params")
                                         .getJSONObject("result")
                                         .getJSONArray("changes");
@@ -286,7 +260,7 @@ public class EncointerActivity extends AppCompatActivity {
                                     ceremonyIndex = new BigInteger("0");
                                 }
                                 update_ceremony_index(ceremonyIndex);
-                            } else if (subscription == subscriptionIdRegisterParticipant) {
+                            } else if (subscription.equals(subscriptionIdRegisterParticipant)) {
                                 if (jsonObj.getJSONObject("params")
                                         .getJSONObject("result").has("finalized")) {
                                     runOnUiThread(new Runnable() {
@@ -296,6 +270,8 @@ public class EncointerActivity extends AppCompatActivity {
                                         }
                                     });
                                 }
+                            } else {
+                                Log.w(TAG, "unknown subscription: "+ subscription.toString());
                             }
                         } else if (jsonObj.has("result")) {
                             Log.d(TAG, "is a result");
@@ -349,19 +325,7 @@ public class EncointerActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    if (accountBalance != null) {
-                        if (accountBalance.compareTo(BigInteger.TEN) < 0) {
-                            if ((accountNonce != null)
-                                    && (genesisHash != null)
-                                    && (specVersion != null)
-                                    && (AliceHasPity)) {
-                                Log.i(TAG, "Alice has pity and sends you some");
-                                AliceHasPity = false;
-                                sendRpcRequest("bootstrap_funding", 27);
-                            }
-                        }
-                    }
-                }
+                 }
 
                 @Override
                 public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
@@ -489,13 +453,13 @@ public class EncointerActivity extends AppCompatActivity {
             args.put("id", id);
             args.put("genesis_hash", genesisHash);
             args.put("spec_version", specVersion);
-            args.put("cindex", ceremonyIndex);
-            args.put("mindex", meetupIndex);
+            args.put("ceremony_index", ceremonyIndex);
+            args.put("meetup_index", meetupIndex);
             args.put("nonce", accountNonce);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String reqjson = chainApi.getJsonReq(request, args.toString());
+        String reqjson = getJsonReq(request, args.toString());
         Log.i(TAG,"sending rpc request: "+ reqjson);
         ws.sendText(reqjson);
     }
@@ -505,20 +469,14 @@ public class EncointerActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "can't start ceremony before knowing meetup index", Toast.LENGTH_SHORT ).show();
             return;
         }
-        if (encointerChainBound) {
-            encointerChainService.setAccountNonce();
-            int num = encointerChainService.getAccountNonce();
-            Toast.makeText(this, "number: " + num, Toast.LENGTH_SHORT).show();
-        }
-
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         Intent intent = new Intent(this, PersonCounter.class);
         JSONObject args = new JSONObject();
         try {
             args.put("username", sharedPref.getString("username","dummy"));
             args.put("phrase", accountPhrase);
-            args.put("cindex", ceremonyIndex);
-            args.put("mindex", meetupIndex);
+            args.put("ceremony_index", ceremonyIndex);
+            args.put("meetup_index", meetupIndex);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -541,6 +499,9 @@ public class EncointerActivity extends AppCompatActivity {
         return true;
     }
 
-
+    public native String initNativeLogger();
+    public native String mustThrowException();
+    public native String newAccount();
+    public native String getJsonReq(String request, String arg);
 }
 
