@@ -98,7 +98,7 @@ public class DeviceList extends AppCompatActivity {
                         toast.show();
                         add(new DeviceItem(endpointId, info.getEndpointName(), info.getServiceId()));
                         // An endpoint was found. We request a connection to it.
-                        Log.i(TAG, "onEndpointFound: endpoint found: " + info.getEndpointName());
+                        Log.i(TAG, "onEndpointFound: endpoint found: " + info.getEndpointName() + "(id: " + endpointId + ")");
                     }
                 }
 
@@ -128,7 +128,7 @@ public class DeviceList extends AppCompatActivity {
             new ConnectionLifecycleCallback() {
                 @Override
                 public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
-                    Log.i(TAG, "onConnectionInitiated: accepting connection from " + connectionInfo.getEndpointName());
+                    Log.i(TAG, "onConnectionInitiated: accepting connection from " + connectionInfo.getEndpointName() + "(id: " + endpointId + ")");
                     Toast toast = Toast.makeText(DeviceList.this, connectionInfo.getAuthenticationToken(), Toast.LENGTH_LONG);
                     toast.show();
                     setAuthenticationToken(endpointId, connectionInfo);
@@ -140,16 +140,16 @@ public class DeviceList extends AppCompatActivity {
                 public void onConnectionResult(String endpointId, ConnectionResolution result) {
                     switch (result.getStatus().getStatusCode()) {
                         case ConnectionsStatusCodes.STATUS_OK:
-                            Log.i(TAG, "onConnectionResult: connection successful");
+                            Log.i(TAG, "onConnectionResult: connection to " + endpointId + " successful");
                             // We're connected! Can now start sending and receiving data.
                             connectionEstablished(endpointId);
                             break;
                         case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
-                            Log.i(TAG, "onConnectionResult: connection rejected");
+                            Log.i(TAG, "onConnectionResult: connection to " + endpointId + " rejected");
                             // The connection was rejected by one or both sides.
                             break;
                         default:
-                            Log.i(TAG, "onConnectionResult: connection failed");
+                            Log.i(TAG, "onConnectionResult: connection to " + endpointId + " failed");
                             // The connection was broken before it was accepted.
                             Toast toast = Toast.makeText(DeviceList.this, "Connecting to " + endpointId + " failed", Toast.LENGTH_LONG);
                             toast.show();
@@ -174,6 +174,8 @@ public class DeviceList extends AppCompatActivity {
 
     private final PayloadCallback payloadCallback =
             new PayloadCallback() {
+                //  is called when the first byte of a Payload is received;
+                //  it does not indicate that the entire Payload has been received.
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
                     // A new payload is being sent over.
@@ -185,9 +187,14 @@ public class DeviceList extends AppCompatActivity {
                     }
                 }
 
+                //  is called with a status of PayloadTransferUpdate.Status.SUCCESS
+                //  (or PayloadTransferUpdate.Status.ERROR in the case of an error).
                 @Override
                 public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {
                     // Payload progress has updated.
+                    // Bytes payloads are sent as a single chunk, so you'll receive a SUCCESS update immediately
+                    // after the call to onPayloadReceived().
+
                 }
             };
 
@@ -211,6 +218,8 @@ public class DeviceList extends AppCompatActivity {
             PERSON_COUNTER = args.getInt("n_participants") - 1;
             USERNAME = args.getString("username");
             claim = newClaim(ARGS);
+            Log.i(TAG, "created new claim: "+ claim);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

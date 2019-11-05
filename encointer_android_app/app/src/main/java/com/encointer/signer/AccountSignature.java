@@ -7,9 +7,13 @@ import org.threeten.bp.LocalDateTime;
 
 public class AccountSignature implements Serializable {
 
+    // the witnesses public key used to sign the proof of personhood
     private PublicKey publicKey;
+    // the number of attendantes as observed by witness
     private Integer attendantsCount;
+    // witnessee's USERNAME whose personhood is to be proven
     private String id;
+    // local time claimed by witness' phone
     private LocalDateTime localDateTime;
 
     public AccountSignature(PublicKey publicKey, Integer attendantsCount, String id, LocalDateTime localDateTime) {
