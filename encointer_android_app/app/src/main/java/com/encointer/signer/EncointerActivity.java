@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.neovisionaries.ws.client.*;
 
@@ -53,6 +52,10 @@ public class EncointerActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
+    String      ARGS = null;
+    String      witnessesJson = null;
+    Boolean     witnessesSent = false;
+
     String      node_ws_url = null;
     WebSocket   ws = null;
     String      accountAddress = null;
@@ -74,6 +77,7 @@ public class EncointerActivity extends AppCompatActivity {
     Integer     subscriptionIdCeremonyIndex = null;
     Integer     subscriptionIdCeremonyPhase = null;
     Integer     subscriptionIdRegisterParticipant = null;
+    Integer     subscriptionIdRegisterWitnesses = null;
 
 
     @Override
@@ -143,6 +147,18 @@ public class EncointerActivity extends AppCompatActivity {
             }
         });
 
+        // when we get back from DeviceView, we might have witnesses to send out
+        Intent intent = getIntent();
+        ARGS = intent.getStringExtra(EXTRA_ARGS);
+        try {
+            JSONObject args = new JSONObject(ARGS);
+            witnessesJson = args.getString("witnesses");
+            Log.i(TAG, "got witnesses (will send them ASAP): "+ witnessesJson);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         startWebsocket(node_ws_url);
 
     }
@@ -163,7 +179,9 @@ public class EncointerActivity extends AppCompatActivity {
         super.onStart();
 
         if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
-            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
+            }
         }
     }
 
@@ -269,6 +287,18 @@ public class EncointerActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), "registration has been finalized", Toast.LENGTH_SHORT ).show();
                                         }
                                     });
+                                    Log.i(TAG, "registration for ceremony xt has been finalized");
+                                }
+                            } else if (subscription.equals(subscriptionIdRegisterWitnesses)) {
+                                if (jsonObj.getJSONObject("params")
+                                        .getJSONObject("result").has("finalized")) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "registration of witnesses has been finalized", Toast.LENGTH_SHORT ).show();
+                                        }
+                                    });
+                                    Log.i(TAG, "registration of witnesses xt has been finalized");
                                 }
                             } else {
                                 Log.w(TAG, "unknown subscription: "+ subscription.toString());
@@ -319,7 +349,10 @@ public class EncointerActivity extends AppCompatActivity {
                                     meetupIndex = from_little_endian_hexstring(resstr);
                                     update_meetup_index(meetupIndex);
                                     break;
-
+                                case 47:
+                                    Log.d(TAG, "is subscription for register_witnesses xt");
+                                    subscriptionIdRegisterWitnesses = jsonObj.getInt("result");
+                                    break;
                             }
                         }
                     } catch (Exception e) {
@@ -414,6 +447,11 @@ public class EncointerActivity extends AppCompatActivity {
                         sendRpcRequest("get_meetup_index_for", 32);
                         register_button.setEnabled(false);
                         start_button.setEnabled(true);
+                        if (!(witnessesJson == null)) {
+                            if (!witnessesSent) {
+                                sendRpcRequest("register_witnesses", 47);
+                            }
+                        }
                         break;
                 }
             }
@@ -456,6 +494,7 @@ public class EncointerActivity extends AppCompatActivity {
             args.put("ceremony_index", ceremonyIndex);
             args.put("meetup_index", meetupIndex);
             args.put("nonce", accountNonce);
+            args.put("witnesses", witnessesJson);
         } catch (JSONException e) {
             e.printStackTrace();
         }

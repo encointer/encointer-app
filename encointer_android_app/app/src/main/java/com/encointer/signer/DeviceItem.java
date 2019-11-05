@@ -12,9 +12,9 @@ public class DeviceItem {
     private String authenticationToken;
 //    private Identicon identicon = new Identicon();
     private Bitmap idPicture;
-    private AccountSignature accountSignature;
     private boolean isConnected;
-    private byte[] signature;
+    private String signature = "";
+    private String claim = "";
 
     public DeviceItem(String endpointId, String endpointName, String serviceId) {
         this.endpointId = endpointId;
@@ -43,23 +43,23 @@ public class DeviceItem {
         this.isConnected = isConnected;
     }
 
-    public DeviceItem(String endpointId, String endpointName, String serviceId, String authenticationToken, boolean isConnected, AccountSignature accountSignature, byte[] signature) {
+    public DeviceItem(String endpointId, String endpointName, String serviceId, String authenticationToken, boolean isConnected, String claim, String signature) {
         this.endpointId = endpointId;
         this.endpointName = endpointName;
         this.serviceId = serviceId;
         this.authenticationToken = authenticationToken;
         this.idPicture = Identicon.create(endpointName);
         this.isConnected = isConnected;
-        this.accountSignature = accountSignature;
+        this.claim = claim;
         this.signature = signature;
     }
 
-    public String isAccountSignatureReceived() {
-        if(accountSignature == null) {
-            return null;
-        } else {
-            return "Account Signature received!";
-        }
+    public boolean hasSignature() {
+        return (!signature.equals(""));
+    }
+
+    public boolean hasClaim() {
+        return (!claim.equals(""));
     }
 
     public String getAuthenticationStatus() {
@@ -91,20 +91,12 @@ public class DeviceItem {
         this.idPicture = idPicture;
     }
 
-    public byte[] getSignature() {
+    public String getSignature() {
         return signature;
     }
 
-    public void setSignature(byte[] signature) {
-        this.signature = signature;
-    }
-
-    public AccountSignature getAccountSignature() {
-        return accountSignature;
-    }
-
-    public void setAccountSignature(AccountSignature accountSignature) {
-        this.accountSignature = accountSignature;
+    public String getClaim() {
+        return claim;
     }
 
     public boolean isConnected() {

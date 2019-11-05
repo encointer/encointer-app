@@ -62,7 +62,14 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         final DeviceItem device = deviceList.get(position);
         holder.textView1.setText(String.format("%s (%s), %s", device.getEndpointName(), device.getEndpointId(), device.getAuthenticationStatus()));
         holder.textView2.setText(device.getServiceId());
-        holder.textView3.setText(device.isAccountSignatureReceived());
+        String status = "";
+        if (device.hasClaim()) {
+            status += "claim received ";
+        }
+        if (device.hasSignature()) {
+            status += "signature received ";
+        }
+        holder.textView3.setText(status);
         holder.imageView1.setImageBitmap(device.getIdPicture());
         holder.btnSendSignature.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +83,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                 }
             }
         });
+        holder.btnSendSignature.setEnabled(device.hasClaim());
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

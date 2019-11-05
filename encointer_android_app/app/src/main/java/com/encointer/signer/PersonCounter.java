@@ -17,28 +17,6 @@ public class PersonCounter extends AppCompatActivity {
 
     public static final String EXTRA_ARGS = "com.encointer.signer.ARGS";
 
-    EncointerChain encointerChainService;
-    boolean encointerChainBound = false;
-
-    private ServiceConnection encointerChainConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            EncointerChain.EncointerChainBinder binder = (EncointerChain.EncointerChainBinder) service;
-            encointerChainService = binder.getService();
-            encointerChainBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            encointerChainBound = false;
-        }
-    };
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
