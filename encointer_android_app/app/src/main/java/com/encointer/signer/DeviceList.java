@@ -1,5 +1,6 @@
 package com.encointer.signer;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -63,7 +64,7 @@ import java.util.List;
 public class DeviceList extends AppCompatActivity {
 
     private static final String TAG = "DeviceList";
-
+    static final int PERFORM_MEETUP = 1;  // The request code
     public static final String EXTRA_ARGS = "com.encointer.signer.ARGS";
 
     private static final byte PAYLOAD_CLAIM = 1;
@@ -352,9 +353,10 @@ public class DeviceList extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Intent intent = new Intent(this, EncointerActivity.class);
-        intent.putExtra(EXTRA_ARGS, args.toString());
-        startActivity(intent);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(EXTRA_ARGS,args.toString());
+        setResult(Activity.RESULT_OK,returnIntent);
+        finish();
     }
 
     public void updateSignaturesCounter() {

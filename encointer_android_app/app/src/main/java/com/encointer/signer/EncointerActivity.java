@@ -2,6 +2,7 @@ package com.encointer.signer;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,6 +35,7 @@ import java.util.Map;
 public class EncointerActivity extends AppCompatActivity {
     private static final String TAG = "EncointerActivity";
     public static final String EXTRA_ARGS = "com.encointer.signer.ARGS";
+    static final int PERFORM_MEETUP = 1;  // The request code
 
     public static final int CEREMONY_PHASE_REGISTERING = 0;
     public static final int CEREMONY_PHASE_ASSIGNING = 1;
@@ -173,7 +175,23 @@ public class EncointerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == PERFORM_MEETUP) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
 
+                Log.i(TAG, "meetup result received. will store them: " + data.getStringExtra(EXTRA_ARGS));
+                SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+                sharedPref.edit().putString("meetup_result", data.getStringExtra(EXTRA_ARGS)).apply();
+
+                Toast.makeText(getApplicationContext(), "meetup results have been stored and will be egistered onchain soon", Toast.LENGTH_LONG ).show();
+            } else {
+                Log.e(TAG,"meetup has been canceled");
+            }
+        }
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -526,6 +544,9 @@ public class EncointerActivity extends AppCompatActivity {
     public void registerParticipant(View view) {
         sendRpcRequest("register_participant", 31);
     }
+
+
+
 
     /** Returns true if the app was granted all the permissions. Otherwise, returns false. */
     private static boolean hasPermissions(Context context, String... permissions) {
