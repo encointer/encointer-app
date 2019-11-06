@@ -356,6 +356,7 @@ public class DeviceList extends AppCompatActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(EXTRA_ARGS,args.toString());
         setResult(Activity.RESULT_OK,returnIntent);
+        Log.i(TAG,"Activity DeviceList finishes now. returning result: "+ args.toString());
         finish();
     }
 

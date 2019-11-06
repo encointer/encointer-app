@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 public class PersonCounter extends AppCompatActivity {
 
+    private static final String TAG = "PersonCounter";
     public static final String EXTRA_ARGS = "com.encointer.signer.ARGS";
     static final int PERFORM_MEETUP = 1;  // The request code
 
@@ -58,10 +59,12 @@ public class PersonCounter extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 //just forward intent
                 setResult(Activity.RESULT_OK,data);
+                Log.i(TAG,"Activity PersonCounter finishes now. forwarding result");
                 finish();
 
             } else {
                 setResult(Activity.RESULT_CANCELED, data);
+                Log.e(TAG,"Got result canceled. Activity PersonCounter finishes now.");
                 finish();
             }
         }

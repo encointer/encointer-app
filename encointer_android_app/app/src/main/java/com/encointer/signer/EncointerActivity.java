@@ -55,7 +55,7 @@ public class EncointerActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
     String      ARGS = null;
-    String      witnessesJson = null;
+    JSONArray   witnessesJson = null;
     Boolean     witnessesSent = false;
 
     String      node_ws_url = null;
@@ -116,7 +116,18 @@ public class EncointerActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ((EditText)findViewById(R.id.editText_url)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        if (sharedPref.contains("meetup_result")) {
+
+            try {
+                JSONObject json = new JSONObject(sharedPref.getString("meetup_result", ""));
+                witnessesJson = json.getJSONArray("witnesses");
+                witnessesSent = false;
+                Log.i(TAG, "found unsent witnesses from previous run: " + witnessesJson.toString());
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
+
+        (findViewById(R.id.editText_url)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -133,7 +144,7 @@ public class EncointerActivity extends AppCompatActivity {
                 }
             }
         });
-        ((EditText)findViewById(R.id.editText_username)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        (findViewById(R.id.editText_username)).setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -149,18 +160,6 @@ public class EncointerActivity extends AppCompatActivity {
             }
         });
 
-        // when we get back from DeviceView, we might have witnesses to send out
-        Intent intent = getIntent();
-        ARGS = intent.getStringExtra(EXTRA_ARGS);
-        try {
-            JSONObject args = new JSONObject(ARGS);
-            witnessesJson = args.getString("witnesses");
-            Log.i(TAG, "got witnesses (will send them ASAP): "+ witnessesJson);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         startWebsocket(node_ws_url);
 
     }
@@ -173,24 +172,32 @@ public class EncointerActivity extends AppCompatActivity {
             ws.disconnect();
             ws = null;
         }
+        if (witnessesSent) {
+            Log.i(TAG, "onDestroy: witnesses have been finalized, will purge saved state");
+            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+            sharedPref.edit().remove("meetup_result").apply();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == PERFORM_MEETUP) {
+        //if (requestCode == PERFORM_MEETUP) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
+                Log.i(TAG, "meetup result received. will store it until it is sent and finalized: " + data.getStringExtra(EXTRA_ARGS));
 
-                Log.i(TAG, "meetup result received. will store them: " + data.getStringExtra(EXTRA_ARGS));
                 SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
                 sharedPref.edit().putString("meetup_result", data.getStringExtra(EXTRA_ARGS)).apply();
-
+                try {
+                    witnessesJson = new JSONArray(data.getStringExtra(EXTRA_ARGS));
+                } catch (Exception e) { e.printStackTrace(); }
+                sendRpcRequest("register_witnesses", 47);
                 Toast.makeText(getApplicationContext(), "meetup results have been stored and will be egistered onchain soon", Toast.LENGTH_LONG ).show();
             } else {
                 Log.e(TAG,"meetup has been canceled");
             }
-        }
+        //}
     }
     @Override
     protected void onStart() {
@@ -298,6 +305,9 @@ public class EncointerActivity extends AppCompatActivity {
                                 update_ceremony_index(ceremonyIndex);
                             } else if (subscription.equals(subscriptionIdRegisterParticipant)) {
                                 if (jsonObj.getJSONObject("params")
+                                        .getString("result").equals("ready")) {
+                                    // do nothing until finalized
+                                } else if (jsonObj.getJSONObject("params")
                                         .getJSONObject("result").has("finalized")) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -309,6 +319,9 @@ public class EncointerActivity extends AppCompatActivity {
                                 }
                             } else if (subscription.equals(subscriptionIdRegisterWitnesses)) {
                                 if (jsonObj.getJSONObject("params")
+                                        .getString("result").equals("ready")) {
+                                    // do nothing until finalized
+                                } else if (jsonObj.getJSONObject("params")
                                         .getJSONObject("result").has("finalized")) {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -316,6 +329,8 @@ public class EncointerActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), "registration of witnesses has been finalized", Toast.LENGTH_SHORT ).show();
                                         }
                                     });
+                                    witnessesSent = true;
+                                    //TODO: delete witnesses from shared prefs in UI thread
                                     Log.i(TAG, "registration of witnesses xt has been finalized");
                                 }
                             } else {
@@ -441,6 +456,7 @@ public class EncointerActivity extends AppCompatActivity {
         });
     }
 
+
     public void update_ceremony_phase(BigInteger value) {
         runOnUiThread(new Runnable() {
             @Override
@@ -467,6 +483,7 @@ public class EncointerActivity extends AppCompatActivity {
                         start_button.setEnabled(true);
                         if (!(witnessesJson == null)) {
                             if (!witnessesSent) {
+                                Log.i(TAG, "sending pending witnesses: " + witnessesJson.toString());
                                 sendRpcRequest("register_witnesses", 47);
                             }
                         }
@@ -538,15 +555,12 @@ public class EncointerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         intent.putExtra(EXTRA_ARGS, args.toString());
-        startActivity(intent);
+        startActivityForResult(intent, PERFORM_MEETUP);
     }
 
     public void registerParticipant(View view) {
         sendRpcRequest("register_participant", 31);
     }
-
-
-
 
     /** Returns true if the app was granted all the permissions. Otherwise, returns false. */
     private static boolean hasPermissions(Context context, String... permissions) {
