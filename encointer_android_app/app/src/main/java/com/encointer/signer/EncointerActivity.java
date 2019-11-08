@@ -84,6 +84,7 @@ public class EncointerActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "lifecycle onCreate()");
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
 
@@ -166,41 +167,18 @@ public class EncointerActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "lifecycle onDestroy()");
         super.onDestroy();
 
         if (ws != null) {
             ws.disconnect();
             ws = null;
         }
-        if (witnessesSent) {
-            Log.i(TAG, "onDestroy: witnesses have been finalized, will purge saved state");
-            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-            sharedPref.edit().remove("meetup_result").apply();
-        }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        //if (requestCode == PERFORM_MEETUP) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                Log.i(TAG, "meetup result received. will store it until it is sent and finalized: " + data.getStringExtra(EXTRA_ARGS));
-
-                SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-                sharedPref.edit().putString("meetup_result", data.getStringExtra(EXTRA_ARGS)).apply();
-                try {
-                    witnessesJson = new JSONArray(data.getStringExtra(EXTRA_ARGS));
-                } catch (Exception e) { e.printStackTrace(); }
-                sendRpcRequest("register_witnesses", 47);
-                Toast.makeText(getApplicationContext(), "meetup results have been stored and will be egistered onchain soon", Toast.LENGTH_LONG ).show();
-            } else {
-                Log.e(TAG,"meetup has been canceled");
-            }
-        //}
-    }
     @Override
     protected void onStart() {
+        Log.d(TAG, "lifecycle onStart()");
         super.onStart();
 
         if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
@@ -208,21 +186,75 @@ public class EncointerActivity extends AppCompatActivity {
                 requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
             }
         }
+
+/*        if (ws != null) {
+            if (!ws.isOpen()) {
+                Log.d(TAG, "re-opening websocket");
+                startWebsocket(node_ws_url);
+            }
+        }*/
     }
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "lifecycle onStop()");
         super.onStop();
+
+        if (ws != null) {
+            ws.disconnect();
+        }
     }
 
+    @Override
+    protected void onSaveInstanceState (Bundle outState) {
+        Log.i(TAG, "lifecycle onSaveInstanceState");
+        if (witnessesSent) {
+            Log.i(TAG, "witnesses have been finalized, will purge saved state");
+            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+            sharedPref.edit().remove("meetup_result").apply();
+        }
+    }
 
-    public void startWebsocket(String node_ws_url) {
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "lifecycle onResume()");
+        super.onResume();
+ /*       if (ws != null) {
+            if (!ws.isOpen()) {
+                Log.d(TAG, "re-opening websocket");
+                startWebsocket(node_ws_url);
+            }
+        }*/
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Log.i(TAG, "meetup result received. will store it until it is sent and finalized: " + data.getStringExtra(EXTRA_ARGS));
+
+            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+            sharedPref.edit().putString("meetup_result", data.getStringExtra(EXTRA_ARGS)).apply();
+            try {
+                JSONObject json = new JSONObject(data.getStringExtra(EXTRA_ARGS));
+                witnessesJson = json.getJSONArray("witnesses");
+                witnessesSent = false;
+                sendRpcRequest("register_witnesses", 47);
+                Toast.makeText(getApplicationContext(), "meetup results have been stored and will be egistered onchain soon", Toast.LENGTH_LONG ).show();
+            } catch (Exception e) { e.printStackTrace(); }
+        } else {
+            Log.e(TAG,"meetup has been canceled");
+
+        }
+        startWebsocket(node_ws_url);
+    }
+
+    public void startWebsocket(String url) {
         // Create a WebSocket factory and set 5000 milliseconds as a timeout
         // value for socket encointerChainConnection.
         WebSocketFactory factory = new WebSocketFactory().setConnectionTimeout(5000);
         // Create a WebSocket. The timeout value set above is used.
         try {
-            ws = factory.createSocket(node_ws_url);
+            ws = factory.createSocket(url);
             ws.addListener(new WebSocketAdapter() {
 
                 @Override
@@ -330,7 +362,6 @@ public class EncointerActivity extends AppCompatActivity {
                                         }
                                     });
                                     witnessesSent = true;
-                                    //TODO: delete witnesses from shared prefs in UI thread
                                     Log.i(TAG, "registration of witnesses xt has been finalized");
                                 }
                             } else {
@@ -395,7 +426,7 @@ public class EncointerActivity extends AppCompatActivity {
 
                 @Override
                 public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-                    Log.i(TAG, "onConnected is executed");
+                    Log.i(TAG, "lifecycle ws onConnected");
                     System.loadLibrary("encointer_api_native");
                     Log.i(TAG, "subscribing to Alexander Block updates");
                     websocket.sendText("{\"id\":11,\"jsonrpc\":\"2.0\",\"method\":\"chain_subscribeNewHead\",\"params\":[]}");
@@ -406,6 +437,15 @@ public class EncointerActivity extends AppCompatActivity {
                     sendRpcRequest("subscribe_balance_for", 13);
                     sendRpcRequest("subscribe_ceremony_index", 17);
                     sendRpcRequest("subscribe_ceremony_phase", 18);
+                }
+
+                @Override
+                public void onDisconnected(WebSocket websocket,
+                                           WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame,
+                                           boolean closedByServer) throws Exception {
+                    super.onDisconnected(websocket, serverCloseFrame, clientCloseFrame, closedByServer);
+                    Log.d(TAG, "lifecycle ws onDisconnected()");
+                    // TODO here we could trigger reconnection if it wasn't deliberate
                 }
             });
 

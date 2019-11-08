@@ -93,6 +93,7 @@
             <TextView android:text="node url" />
 
             <EditText
+                android:layout_marginLeft="5dip"
                 android:id="@+id/editText_url"
                 android:ems="13"
                 android:inputType="textPersonName"
@@ -105,6 +106,7 @@
             <TextView android:text="Nickname" />
 
             <EditText
+                android:layout_marginLeft="5dip"
                 android:id="@+id/editText_username"
                 android:ems="10"
                 android:hint="@string/hint_username"
@@ -117,6 +119,7 @@
             <TextView android:text="Account" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/account_address"
                 android:text="myaddress"
                 android:textIsSelectable="true" />
@@ -124,9 +127,12 @@
 
         <TableRow android:padding="5dip">
 
-            <TextView android:text="Balance" />
+            <TextView
+                android:text="Balance"
+                android:layout_marginLeft="5dip" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/account_balance"
                 android:text="none" />
         </TableRow>
@@ -136,6 +142,7 @@
             <TextView android:text="Nonce" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/account_nonce"
                 android:text="none" />
         </TableRow>
@@ -145,6 +152,7 @@
             <TextView android:text="Block Number" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/block_number"
                 android:text="none" />
         </TableRow>
@@ -154,6 +162,7 @@
             <TextView android:text="Ceremony Phase" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/ceremony_phase"
                 android:text="none" />
         </TableRow>
@@ -163,6 +172,7 @@
             <TextView android:text="Ceremony Index" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/ceremony_index"
                 android:text="none" />
         </TableRow>
@@ -172,6 +182,7 @@
             <TextView android:text="Meetup Index" />
 
             <TextView
+                android:layout_marginLeft="5dip"
                 android:id="@+id/meetup_index"
                 android:text="not assigned yet" />
         </TableRow>

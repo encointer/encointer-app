@@ -60,14 +60,14 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final DeviceItem device = deviceList.get(position);
-        holder.textView1.setText(String.format("%s (%s), %s", device.getEndpointName(), device.getEndpointId(), device.getAuthenticationStatus()));
-        holder.textView2.setText(device.getServiceId());
+        holder.textView1.setText(String.format("%s (%s)", device.getEndpointName(), device.getEndpointId()));
+        holder.textView2.setText(device.getAuthenticationStatus());
         String status = "";
         if (device.hasClaim()) {
-            status += "claim received ";
+            status += "claim ack ";
         }
         if (device.hasSignature()) {
-            status += "signature received ";
+            status += "sign ack ";
         }
         holder.textView3.setText(status);
         holder.imageView1.setImageBitmap(device.getIdPicture());

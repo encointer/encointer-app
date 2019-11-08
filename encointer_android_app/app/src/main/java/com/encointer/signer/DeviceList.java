@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -236,11 +237,14 @@ public class DeviceList extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "lifecycle onCreate()");
         super.onCreate(savedInstanceState);
         AndroidThreeTen.init(this);
 
         System.loadLibrary("encointer_api_native");
         //initNativeLogger();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_device_list);
 
@@ -296,6 +300,7 @@ public class DeviceList extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "lifecycle onResume()");
         super.onResume();
         // Start advertising
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
@@ -306,6 +311,7 @@ public class DeviceList extends AppCompatActivity {
     /* unregister the broadcast receiver */
     @Override
     protected void onPause() {
+        Log.d(TAG, "lifecycle onPause()");
         super.onPause();
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
@@ -315,6 +321,7 @@ public class DeviceList extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "lifecycle onStop()");
         super.onStop();
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
@@ -345,7 +352,9 @@ public class DeviceList extends AppCompatActivity {
         JSONArray witnesses = new JSONArray();
         try {
             for (DeviceItem item : deviceList) {
+                Log.d(TAG,"finalizeMeetup(): checking " + item.getEndpointName());
                 if (item.hasSignature()) {
+                    Log.d(TAG,"finalizeMeetup(): adding " + item.getEndpointName() + " witness " + item.getSignature());
                     witnesses.put(item.getSignature());
                 }
             }
@@ -356,14 +365,14 @@ public class DeviceList extends AppCompatActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(EXTRA_ARGS,args.toString());
         setResult(Activity.RESULT_OK,returnIntent);
-        Log.i(TAG,"Activity DeviceList finishes now. returning result: "+ args.toString());
+        Log.i(TAG,"Activity DeviceList finishes now. returning result: " + args.toString());
         finish();
     }
 
     public void updateSignaturesCounter() {
         signatureCounter = 0;
         for(DeviceItem item : deviceList) {
-            if(item.getSignature() != null) {
+            if(item.hasSignature()) {
                 ++signatureCounter;
             }
         }
@@ -550,9 +559,7 @@ public class DeviceList extends AppCompatActivity {
                 .addOnFailureListener(
                         (Exception e) -> {
                             // Nearby Connections failed to request the connection.
-                            Log.i(TAG, "Connection to " + endpointId + " failed. retrying");
-                            SystemClock.sleep(1000);
-                            establishConnection(endpointId);
+                            Log.i(TAG, "Connection to " + endpointId + " failed");
                         });
     }
 
