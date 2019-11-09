@@ -89,6 +89,9 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             status += "got sign ";
         }
         holder.textView3.setText(status);
+        if (device.hasClaim() && device.hasSignature()) {
+            holder.textView3.setBackgroundColor(parentContext.getResources().getColor(android.R.color.holo_green_dark));
+        }
         holder.imageView1.setImageBitmap(device.getIdPicture());
         holder.btnSendSignature.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +105,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
                 }
             }
         });
-        holder.btnSendSignature.setEnabled(device.hasClaim());
+        holder.btnSendSignature.setEnabled(device.hasClaim() && device.isConnected());
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

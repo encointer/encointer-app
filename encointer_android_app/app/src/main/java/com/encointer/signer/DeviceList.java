@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -85,7 +87,8 @@ public class DeviceList extends AppCompatActivity {
     private AdvertisingOptions advertisingOption ;
     private DiscoveryOptions discoveryOption;
     private Handler mHandler;
-
+    private boolean retry = true;
+    private Vibrator vib;
     private String test;
 
     private Identicon identicon = new Identicon();
@@ -212,6 +215,8 @@ public class DeviceList extends AppCompatActivity {
                                         item.setClaim(endpointClaim);
                                         devices.put(endpointId, item);
                                         mAdapter.notifyDataSetChanged();
+                                        // let's get the user's attention
+                                        vib.vibrate(200);
                                     }
                                     catch (UnsupportedEncodingException e ) { e.printStackTrace();}
                                     break;
@@ -257,6 +262,8 @@ public class DeviceList extends AppCompatActivity {
 
         wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         wifiTurnOnAtExit = wifiManager.isWifiEnabled();
+
+        vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_device_list);
@@ -315,7 +322,7 @@ public class DeviceList extends AppCompatActivity {
                 } else {
                     Log.i(TAG,"stop advertising my nearby id");
                     connectionsClient.stopAdvertising();
-                    connectionsClient.stopDiscovery();
+                    //connectionsClient.stopDiscovery();
                 }
             }
         });
@@ -331,6 +338,7 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
         // Start discovering
         connectionsClient.startDiscovery("com.encointer.signer",endpointDiscoveryCallback, discoveryOption);
+        retry = true;
     }
 
     /* unregister the broadcast receiver */
@@ -344,6 +352,7 @@ public class DeviceList extends AppCompatActivity {
         if (wifiTurnOnAtExit) {
             wifiManager.setWifiEnabled(true);
         }
+        retry = false;
     }
 
     @Override
@@ -353,7 +362,7 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
-
+        retry = false;
     }
 
     @Override
@@ -361,6 +370,7 @@ public class DeviceList extends AppCompatActivity {
         Log.d(TAG, "lifecycle onDestroy()");
         super.onDestroy();
         devices.clear();
+        retry = false;
     }
 
     public void finalizeMeetup() {
@@ -493,14 +503,16 @@ public class DeviceList extends AppCompatActivity {
                             Log.i(TAG, "Connection to " + endpointId + " failed with: ", e);
                             Toast toast = Toast.makeText(DeviceList.this, "establishConnection to " + endpointId + " failed", Toast.LENGTH_LONG);
                             toast.show();
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast toast = Toast.makeText(DeviceList.this, "retrying connection to " + endpointId, Toast.LENGTH_LONG);
-                                    toast.show();
-                                    establishConnection(endpointId);
-                                }
-                            }, (new Random()).nextInt(1000) + 300 );
+                            if (retry) {
+                                mHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast toast = Toast.makeText(DeviceList.this, "retrying connection to " + endpointId, Toast.LENGTH_LONG);
+                                        toast.show();
+                                        establishConnection(endpointId);
+                                    }
+                                }, (new Random()).nextInt(1000) + 300);
+                            }
                         });
     }
 
