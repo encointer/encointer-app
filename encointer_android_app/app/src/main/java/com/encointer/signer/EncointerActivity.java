@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -90,6 +91,8 @@ public class EncointerActivity extends AppCompatActivity {
 
         System.loadLibrary("encointer_api_native");
         initNativeLogger();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
 
@@ -197,12 +200,9 @@ public class EncointerActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        // can be called at screen off, or when changing activity
         Log.d(TAG, "lifecycle onStop()");
         super.onStop();
-
-        if (ws != null) {
-            ws.disconnect();
-        }
     }
 
     @Override
@@ -579,6 +579,9 @@ public class EncointerActivity extends AppCompatActivity {
     }
 
     public void startCeremony(View view) {
+        ws.disconnect();
+        ws = null;
+
         if (meetupIndex == null) {
             Toast.makeText(getApplicationContext(), "can't start ceremony before knowing meetup index", Toast.LENGTH_SHORT ).show();
             return;

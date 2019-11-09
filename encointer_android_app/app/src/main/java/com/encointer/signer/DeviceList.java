@@ -2,13 +2,9 @@ package com.encointer.signer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,13 +33,12 @@ import com.google.android.gms.nearby.connection.Strategy;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 
-import org.apache.commons.lang3.SerializationUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -51,16 +46,16 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.security.spec.RSAKeyGenParameterSpec;
 //import java.time.LocalDateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONStringer;
-import org.threeten.bp.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DeviceList extends AppCompatActivity {
 
@@ -90,8 +85,8 @@ public class DeviceList extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private List<DeviceItem> deviceList = new ArrayList<>();
-
+    //private List<DeviceItem> devices = new ArrayList<>();
+    private Map<String, DeviceItem> devices;
 
     private PublicKey mPublicKey;
     private PrivateKey mPrivateKey;
@@ -103,33 +98,29 @@ public class DeviceList extends AppCompatActivity {
                 @Override
                 public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
                     if(info.getServiceId().equals("com.encointer.signer")) {
-                        Toast toast = Toast.makeText(DeviceList.this, "Found new Device", Toast.LENGTH_SHORT);
-                        toast.show();
-                        add(new DeviceItem(endpointId, info.getEndpointName(), info.getServiceId()));
-                        // An endpoint was found. We request a connection to it.
-                        Log.i(TAG, "onEndpointFound: endpoint found: " + info.getEndpointName() + "(id: " + endpointId + ")");
+                        if (devices.containsKey(endpointId)) {
+                            //we merely rediscovered an endpoint we already know
+                            Log.i(TAG, "onEndpointFound: rediscovered endpoint we already knowend: " + info.getEndpointName() + "(id: " + endpointId + ")");
+                        } else {
+                            Log.i(TAG, "onEndpointFound: discovered new endpoint: " + info.getEndpointName() + "(id: " + endpointId + ")");
+                            devices.put(endpointId, new DeviceItem(endpointId, info.getEndpointName(), info.getServiceId()));
+                            updateFoundConnections();
+                        }
                         establishConnection(endpointId);
                     }
                 }
 
                 @Override
                 public void onEndpointLost(String endpointId) {
-                    try {
-                        Log.i(TAG, "onEndpointLost: endpoint lost: " + endpointId);
-                        if(getItemFromEndpointId(endpointId) != null) {
-                            // A previously discovered endpoint has gone away.
-                            // Remove it from the list if we don't have a signature.
-                            if(getItemFromEndpointId(endpointId).getSignature() == null) {
-                                remove(endpointId);
-                            } else {
-                                DeviceItem item = remove(endpointId);
-                                add(new DeviceItem(item.getEndpointId(), item.getEndpointName(), item.getServiceId(), null, false, item.getClaim(), item.getSignature()));
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    Log.i(TAG, "onEndpointLost: endpoint lost: " + endpointId);
+                    if (devices.containsKey(endpointId)) {
+                        DeviceItem item = devices.get(endpointId);
+                        item.setConnected(false);
+                        devices.put(endpointId, item);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.e(TAG, "lost and endpoint we didn't even know. this should never happen");
                     }
-
                 }
             };
 
@@ -139,11 +130,18 @@ public class DeviceList extends AppCompatActivity {
                 @Override
                 public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
                     Log.i(TAG, "onConnectionInitiated: accepting connection from " + connectionInfo.getEndpointName() + "(id: " + endpointId + ")");
-                    Toast toast = Toast.makeText(DeviceList.this, connectionInfo.getAuthenticationToken(), Toast.LENGTH_LONG);
-                    toast.show();
-                    setAuthenticationToken(endpointId, connectionInfo);
-                    // Automatically accept the connection on both sides.
-                    connectionsClient.acceptConnection(endpointId, payloadCallback);
+                    if (devices.containsKey(endpointId)) {
+                        DeviceItem item = devices.get(endpointId);
+                        item.setAuthenticationToken(connectionInfo.getAuthenticationToken());
+                        devices.put(endpointId, item);
+                        mAdapter.notifyDataSetChanged();
+                        Toast toast = Toast.makeText(DeviceList.this, connectionInfo.getAuthenticationToken(), Toast.LENGTH_LONG);
+                        toast.show();
+                        // Automatically accept the connection on both sides.
+                        connectionsClient.acceptConnection(endpointId, payloadCallback);
+                    } else {
+                        Log.e(TAG, "onConnectionInitiated with device we haven't even discovered yet. this should never happen");
+                    }
                 }
 
                 @Override
@@ -152,12 +150,13 @@ public class DeviceList extends AppCompatActivity {
                         case ConnectionsStatusCodes.STATUS_OK:
                             Log.i(TAG, "onConnectionResult: connection to " + endpointId + " successful");
                             // We're connected! Can now start sending and receiving data.
-                            connectionEstablished(endpointId);
+                            DeviceItem item = devices.get(endpointId);
+                            item.setConnected(true);
+                            devices.put(endpointId, item);
+                            mAdapter.notifyDataSetChanged();
                             try {
                                 sendClaim(endpointId);
-                            } catch (NoSuchAlgorithmException e) {
-                                e.printStackTrace();
-                            } catch (InvalidKeyException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             break;
@@ -179,13 +178,10 @@ public class DeviceList extends AppCompatActivity {
                     Log.i(TAG, "onDisconnected: disconnected from the opponent");
                     // We've been disconnected from this endpoint. No more data can be
                     // sent or received.
-                    try {
-                        DeviceItem item = remove(endpointId);
-                        add(new DeviceItem(item.getEndpointId(), item.getEndpointName(), item.getServiceId(), null, false, item.getClaim(), item.getSignature()));
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-
+                    DeviceItem item = devices.get(endpointId);
+                    item.setConnected(false);
+                    devices.put(endpointId, item);
+                    mAdapter.notifyDataSetChanged();
                 }
             };
 
@@ -195,31 +191,35 @@ public class DeviceList extends AppCompatActivity {
                 //  it does not indicate that the entire Payload has been received.
                 @Override
                 public void onPayloadReceived(String endpointId, Payload payload) {
-                    // A new payload is being sent over.
-
                     if(payload.asBytes() != null) {
                         byte [] payloadBytes = payload.asBytes();
                         if (payloadBytes.length > 2) {
+                            DeviceItem item = devices.get(endpointId);
                             switch (payloadBytes[0]) {
                                 case PAYLOAD_CLAIM:
                                     try {
                                         String endpointClaim = new String(stripPayload(payloadBytes), "UTF-8");
                                         Log.i(TAG, "onPayloadReceived: claim received from " + endpointId + ": "+ endpointClaim);
-                                        collectClaim(endpointId, endpointClaim);
-                                    } catch (Exception e) { e.printStackTrace(); }
+                                        item.setClaim(endpointClaim);
+                                        devices.put(endpointId, item);
+                                        mAdapter.notifyDataSetChanged();
+                                    }
+                                    catch (UnsupportedEncodingException e ) { e.printStackTrace();}
                                     break;
                                 case PAYLOAD_SIGNATURE:
                                     try {
                                         String endpointSignature = new String(stripPayload(payloadBytes), "UTF-8");
                                         Log.i(TAG, "onPayloadReceived: signature received from " + endpointId + ": "+ endpointSignature);
-                                        collectSignature(endpointId, endpointSignature);
+                                        item.setSignature(endpointSignature);
+                                        devices.put(endpointId, item);
+                                        mAdapter.notifyDataSetChanged();
                                         updateSignaturesCounter();
-                                    } catch (Exception e) { e.printStackTrace(); }
+                                    }
+                                    catch (UnsupportedEncodingException e ) { e.printStackTrace();}
                                     break;
                                 default:
                                     Log.w(TAG,"onPayloadReceived: failed to identify payload by first byte");
                             }
-
                         }
                     }
                 }
@@ -244,10 +244,10 @@ public class DeviceList extends AppCompatActivity {
         System.loadLibrary("encointer_api_native");
         //initNativeLogger();
 
+        devices = new HashMap<>();
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         setContentView(R.layout.activity_device_list);
-
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
 
@@ -267,6 +267,9 @@ public class DeviceList extends AppCompatActivity {
         ImageView imageViewUser = (ImageView) findViewById(R.id.imageViewUser);
         imageViewUser.setImageBitmap(Identicon.create(USERNAME));
 
+        updateSignaturesCounter();
+        updateFoundConnections();
+
         // Set up android nearby service
         connectionsClient = Nearby.getConnectionsClient(this);
         advertisingOption = new AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build();
@@ -274,18 +277,11 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption); // Start advertising
         connectionsClient.startDiscovery("com.encointer.signer", endpointDiscoveryCallback, discoveryOption); // Start discovering
 
-        // Generate public / private key pair
-        keyPairGeneration();
-
-        // Reset connection and token counter
-        resetFoundConnections();
-        resetSignaturesCounter();
-
         // Set up list of available devices
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_device_list);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new DevicesRecyclerViewAdapter(deviceList,DeviceList.this, TAG);
+        mAdapter = new DevicesRecyclerViewAdapter(devices,DeviceList.this, TAG);
         recyclerView.setAdapter(mAdapter);
 
         ((Button) findViewById(R.id.button_done)).setOnClickListener(new View.OnClickListener() {
@@ -316,7 +312,6 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
-        resetFoundConnections();
     }
 
     @Override
@@ -326,32 +321,20 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
-        resetFoundConnections();
     }
 
-
-    //
-    // Update counters
-    //
-    public void updateFoundConnections(Integer number) {
-        foundDevices += number;
-        TextView textView = findViewById(R.id.textView_devices_found);
-        String counter = "Devices found: " + foundDevices.toString() + "/" + PERSON_COUNTER.toString();
-        textView.setText(counter);
-    }
-
-    public void resetFoundConnections() {
-        foundDevices = 0;
-        TextView textView = findViewById(R.id.textView_devices_found);
-        String counter = "Devices found: " + foundDevices.toString() + "/" + PERSON_COUNTER.toString();
-        textView.setText(counter);
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "lifecycle onDestroy()");
+        super.onDestroy();
+        devices.clear();
     }
 
     public void finalizeMeetup() {
         JSONObject args = new JSONObject();
         JSONArray witnesses = new JSONArray();
         try {
-            for (DeviceItem item : deviceList) {
+            for (DeviceItem item : devices.values()) {
                 Log.d(TAG,"finalizeMeetup(): checking " + item.getEndpointName());
                 if (item.hasSignature()) {
                     Log.d(TAG,"finalizeMeetup(): adding " + item.getEndpointName() + " witness " + item.getSignature());
@@ -369,9 +352,20 @@ public class DeviceList extends AppCompatActivity {
         finish();
     }
 
+    //
+    // Update counters
+    //
+    public void updateFoundConnections() {
+        foundDevices = devices.size();
+        TextView textView = findViewById(R.id.textView_devices_found);
+        String counter = "Devices found: " + foundDevices.toString() + "/" + PERSON_COUNTER.toString();
+        textView.setText(counter);
+    }
+
+
     public void updateSignaturesCounter() {
         signatureCounter = 0;
-        for(DeviceItem item : deviceList) {
+        for(DeviceItem item : devices.values()) {
             if(item.hasSignature()) {
                 ++signatureCounter;
             }
@@ -379,6 +373,8 @@ public class DeviceList extends AppCompatActivity {
         TextView textView = findViewById(R.id.textView_devices_challenged);
         String counter = "Signatures collected: " + signatureCounter.toString() + "/" + PERSON_COUNTER.toString();
         textView.setText(counter);
+
+ /*
         if(signatureCounter.equals(PERSON_COUNTER)) {
             try {
                 FileOutputStream outputStream = openFileOutput("collectedSignatures", Context.MODE_PRIVATE);
@@ -418,13 +414,13 @@ public class DeviceList extends AppCompatActivity {
                         }
                     })
                     .show();
-        }
+        }*/
     }
 
-    private byte[] listOfSignedDevices() throws IOException {
+/*    private byte[] listOfSignedDevices() throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
-        for(DeviceItem item : deviceList) {
+        for(DeviceItem item : devices.values()) {
             if(item.hasSignature()) {
                 oos.writeObject(item.getSignature());
             }
@@ -438,112 +434,7 @@ public class DeviceList extends AppCompatActivity {
         String counter = "Signatures collected: " + signatureCounter.toString() + "/" + PERSON_COUNTER.toString();
         textView.setText(counter);
     }
-
-
-    //
-    // Update device list
-    //
-    public void add(DeviceItem item) {
-        try {
-            if(getItemsFromEndpointName(item.getEndpointName()) != null) {
-                Collection<DeviceItem> items = getItemsFromEndpointName(item.getEndpointName());
-                updateFoundConnections((items.size() * -1));
-                deviceList.removeAll(items);
-            }
-            updateFoundConnections(1);
-            deviceList.add(item);
-            mAdapter.notifyDataSetChanged();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public DeviceItem remove(String endpointId) {
-        DeviceItem item = getItemFromEndpointId(endpointId);
-        try {
-            if( getItemFromEndpointId(endpointId) != null) {
-                updateFoundConnections(-1);
-                deviceList.remove(getItemFromEndpointId(endpointId));
-            }
-            mAdapter.notifyDataSetChanged();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return item;
-    }
-
-
-    //
-    // Device list utils
-    //
-    public DeviceItem getItemFromEndpointId(String endpointId) {
-        for (DeviceItem item : deviceList) {
-            if (item.getEndpointId().equals(endpointId)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    public Collection<DeviceItem> getItemsFromEndpointName(String endpointName) {
-        Collection<DeviceItem> items = new ArrayList<>();
-        for (DeviceItem item : deviceList) {
-            if (item.getEndpointName().equals(endpointName)) {
-                items.add(item);
-            }
-        }
-        return items;
-    }
-
-
-    //
-    // Update device item
-    //
-    public void setAuthenticationToken(String endpointId, ConnectionInfo connectionInfo) {
-        try {
-            if(getItemFromEndpointId(endpointId) == null) {
-                add(new DeviceItem(endpointId, connectionInfo.getEndpointName(), "com.encointer.signer", connectionInfo.getAuthenticationToken()));
-            } else {
-                DeviceItem item = remove(endpointId);
-                add(new DeviceItem(item.getEndpointId(), item.getEndpointName(), item.getServiceId(), connectionInfo.getAuthenticationToken()));
-            }
-            mAdapter.notifyDataSetChanged();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void connectionEstablished(String endpointId) {
-        try {
-            DeviceItem item = remove(endpointId);
-            add(new DeviceItem(item.getEndpointId(), item.getEndpointName(), item.getServiceId(), item.getAuthenticationToken(),true));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mAdapter.notifyDataSetChanged();
-    }
-
-    public void collectSignature(String endpointId, String signature) {
-        try {
-            DeviceItem item = remove(endpointId);
-            add(new DeviceItem(item.getEndpointId(), item.getEndpointName(), item.getServiceId(), item.getAuthenticationToken(),item.isConnected(), item.getClaim(), signature));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mAdapter.notifyDataSetChanged();
-    }
-
-    public void collectClaim(String endpointId, String claim) {
-        try {
-            DeviceItem item = remove(endpointId);
-            add(new DeviceItem(item.getEndpointId(), item.getEndpointName(), item.getServiceId(), item.getAuthenticationToken(),item.isConnected(), claim, item.getSignature()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mAdapter.notifyDataSetChanged();
-    }
-
-
+*/
     //
     // Clicky pressy
     //
@@ -565,7 +456,7 @@ public class DeviceList extends AppCompatActivity {
 
     public void sendSignature(String endpointId) throws NoSuchAlgorithmException, InvalidKeyException {
         try {
-            DeviceItem item = getItemFromEndpointId(endpointId);
+            DeviceItem item = devices.get(endpointId);
             JSONObject args = new JSONObject(ARGS);
             args.put("claim", item.getClaim());
             String endpointWitness = signClaim(args.toString());
@@ -587,28 +478,6 @@ public class DeviceList extends AppCompatActivity {
         }
     }
 
-    //
-    // Security utils
-    //
-    public void keyPairGeneration() {
-        KeyPair keys = null;
-        try {
-            RSAKeyGenParameterSpec spec = new RSAKeyGenParameterSpec(1024, RSAKeyGenParameterSpec.F4);
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(spec);
-            keys = keyGen.generateKeyPair();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        if(keys != null){
-            mPublicKey = (PublicKey) keys.getPublic();
-            mPrivateKey = (PrivateKey) keys.getPrivate();
-        }
-    }
-
     public byte [] tagPayload(byte identifier, byte [] payload) {
         byte[] c = new byte[1 + payload.length];
         c[0] = identifier;
@@ -620,7 +489,6 @@ public class DeviceList extends AppCompatActivity {
         System.arraycopy(payload, 1, c, 0, payload.length - 1);
         return c;
     }
-
 
     public native String initNativeLogger();
     public native String newClaim(String arg);

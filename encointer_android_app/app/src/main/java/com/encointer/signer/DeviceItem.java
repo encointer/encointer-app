@@ -25,51 +25,6 @@ public class DeviceItem {
         this.isConnected = false;
     }
 
-    public DeviceItem(String endpointId, String endpointName, String serviceId, String authenticationToken) {
-        this.endpointId = endpointId;
-        this.endpointName = endpointName;
-        this.serviceId = serviceId;
-        this.authenticationToken = authenticationToken;
-        this.idPicture = Identicon.create(endpointName);
-        this.isConnected = false;
-    }
-
-    public DeviceItem(String endpointId, String endpointName, String serviceId, String authenticationToken, boolean isConnected) {
-        this.endpointId = endpointId;
-        this.endpointName = endpointName;
-        this.serviceId = serviceId;
-        this.authenticationToken = authenticationToken;
-        this.idPicture = Identicon.create(endpointName);
-        this.isConnected = isConnected;
-    }
-
-    public DeviceItem(String endpointId, String endpointName, String serviceId, String authenticationToken, boolean isConnected, String claim, String signature) {
-        this.endpointId = endpointId;
-        this.endpointName = endpointName;
-        this.serviceId = serviceId;
-        this.authenticationToken = authenticationToken;
-        this.idPicture = Identicon.create(endpointName);
-        this.isConnected = isConnected;
-        this.claim = claim;
-        this.signature = signature;
-    }
-
-    public boolean hasSignature() {
-        return (!signature.equals(""));
-    }
-
-    public boolean hasClaim() {
-        return (!claim.equals(""));
-    }
-
-    public String getAuthenticationStatus() {
-        if(getAuthenticationToken() == null) {
-            return "disconnected";
-        } else {
-            return getAuthenticationToken();
-        }
-    }
-
     @Override
     public String toString() {
         return getEndpointId() + ", " + getEndpointName() + ", " + getServiceId();
@@ -91,12 +46,28 @@ public class DeviceItem {
         this.idPicture = idPicture;
     }
 
+    public boolean hasSignature() {
+        return (!signature.equals(""));
+    }
+
     public String getSignature() {
         return signature;
     }
 
+    public void setSignature(String new_signature) {
+        this.signature = new_signature;
+    }
+
+    public boolean hasClaim() {
+        return (!claim.equals(""));
+    }
+
     public String getClaim() {
         return claim;
+    }
+
+    public void setClaim(String new_claim) {
+        this.claim = new_claim;
     }
 
     public boolean isConnected() {
@@ -104,7 +75,7 @@ public class DeviceItem {
     }
 
     public void setConnected(boolean connected) {
-        isConnected = connected;
+        this.isConnected = connected;
     }
 
     public String getEndpointName() {

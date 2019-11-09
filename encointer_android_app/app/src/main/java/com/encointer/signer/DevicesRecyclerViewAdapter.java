@@ -12,19 +12,19 @@ import android.widget.Toast;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
-    private List<DeviceItem> deviceList;
+    private List<DeviceItem> devices;
     private Context parentContext;
     private String TAG;
 
-
-
-    public DevicesRecyclerViewAdapter(List<DeviceItem> deviceList, Context context, String TAG) {
-        this.deviceList = deviceList;
+    public DevicesRecyclerViewAdapter(Map<String, DeviceItem> devices, Context context, String TAG) {
+        this.devices = new ArrayList(devices.values());
         this.TAG = TAG;
         this.parentContext = context;
     }
@@ -59,15 +59,22 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final DeviceItem device = deviceList.get(position);
+        final DeviceItem device = devices.get(position);
         holder.textView1.setText(String.format("%s (%s)", device.getEndpointName(), device.getEndpointId()));
-        holder.textView2.setText(device.getAuthenticationStatus());
+
+        String connection = device.getAuthenticationToken();
+        if (device.isConnected()) {
+            connection += " (connected) ";
+        } else {
+            connection += " (disconnected) ";
+        }
+        holder.textView2.setText(connection);
         String status = "";
         if (device.hasClaim()) {
-            status += "claim ack ";
+            status += "got claim ";
         }
         if (device.hasSignature()) {
-            status += "sign ack ";
+            status += "got sign ";
         }
         holder.textView3.setText(status);
         holder.imageView1.setImageBitmap(device.getIdPicture());
@@ -87,16 +94,16 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(parentContext, "Connecting to " + deviceList.get(position).getEndpointId(), Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(parentContext, "Connecting to " + devices.get(position).getEndpointId(), Toast.LENGTH_SHORT);
                 toast.show();
-                ((DeviceList)parentContext).establishConnection(deviceList.get(position).getEndpointId());
+                ((DeviceList)parentContext).establishConnection(devices.get(position).getEndpointId());
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return deviceList.size();
+        return devices.size();
     }
 
 }
