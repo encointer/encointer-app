@@ -7,9 +7,12 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
@@ -54,6 +57,8 @@ public class EncointerActivity extends AppCompatActivity {
             };
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+
+    private BroadcastReceiver mNetworkReceiver;
 
     String      ARGS = null;
     JSONArray   witnessesJson = null;
@@ -164,8 +169,35 @@ public class EncointerActivity extends AppCompatActivity {
             }
         });
 
-        startWebsocket(node_ws_url);
-
+        mNetworkReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                try
+                {
+                    if (this.isOnline(context)) {
+                        Log.e(TAG, "Connection status change to: Online");
+                        startWebsocket(node_ws_url);
+                    } else {
+                        Log.e(TAG, "Connection status change to: offline");
+                    }
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
+            private boolean isOnline(Context context) {
+                try {
+                    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+                    //should check null because in airplane mode it will be null
+                    return (netInfo != null && netInfo.isConnected());
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        };
+        registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
@@ -189,13 +221,6 @@ public class EncointerActivity extends AppCompatActivity {
                 requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
             }
         }
-
-/*        if (ws != null) {
-            if (!ws.isOpen()) {
-                Log.d(TAG, "re-opening websocket");
-                startWebsocket(node_ws_url);
-            }
-        }*/
     }
 
     @Override
@@ -219,12 +244,19 @@ public class EncointerActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d(TAG, "lifecycle onResume()");
         super.onResume();
- /*       if (ws != null) {
+
+        if (ws != null) {
             if (!ws.isOpen()) {
-                Log.d(TAG, "re-opening websocket");
-                startWebsocket(node_ws_url);
+                ConnectivityManager cm =
+                        (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                    Log.i(TAG, "we have internet. connecting websocket");
+                    startWebsocket(node_ws_url);
+                }
             }
-        }*/
+        }
+
     }
 
     @Override
@@ -615,6 +647,18 @@ public class EncointerActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    private void registerNetworkBroadcastForNougat() {
+        Log.i(TAG, "registering network status broadcast");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+    }
+
+
 
     public native String initNativeLogger();
     public native String mustThrowException();

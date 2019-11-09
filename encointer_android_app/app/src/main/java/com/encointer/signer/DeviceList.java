@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -74,6 +75,8 @@ public class DeviceList extends AppCompatActivity {
     private Integer foundDevices = 0;
     private Integer signatureCounter = 0;
 
+    private WifiManager wifiManager;
+    private boolean wifiTurnOnAtExit = false;
     private ConnectionsClient connectionsClient; // Our handle to Nearby Connections
     private AdvertisingOptions advertisingOption ;
     private DiscoveryOptions discoveryOption;
@@ -105,6 +108,7 @@ public class DeviceList extends AppCompatActivity {
                             Log.i(TAG, "onEndpointFound: discovered new endpoint: " + info.getEndpointName() + "(id: " + endpointId + ")");
                             devices.put(endpointId, new DeviceItem(endpointId, info.getEndpointName(), info.getServiceId()));
                             updateFoundConnections();
+                            mAdapter.notifyDataSetChanged();
                         }
                         establishConnection(endpointId);
                     }
@@ -246,6 +250,9 @@ public class DeviceList extends AppCompatActivity {
 
         devices = new HashMap<>();
 
+        wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiTurnOnAtExit = wifiManager.isWifiEnabled();
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_device_list);
         // Get the Intent that started this activity and extract the string
@@ -302,6 +309,9 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
         // Start discovering
         connectionsClient.startDiscovery("com.encointer.signer",endpointDiscoveryCallback, discoveryOption);
+        Log.i(TAG, "turning off WiFi to get better nearby connections");
+        wifiManager.setWifiEnabled(false);
+
     }
 
     /* unregister the broadcast receiver */
@@ -312,6 +322,9 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
+        if (wifiTurnOnAtExit) {
+            wifiManager.setWifiEnabled(true);
+        }
     }
 
     @Override
@@ -321,6 +334,7 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
+
     }
 
     @Override

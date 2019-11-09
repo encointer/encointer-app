@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
-INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
-INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
-INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
 MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/d1578515cd5b318a0b7df954f50ea1c1/constraint-layout-2.0.0-beta1/AndroidManifest.xml:2:1-11:12
 MERGED from [com.android.support:appcompat-v7:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/bbf07aa1da9ab954374e693dfcc335b9/appcompat-v7-28.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/02a1a617e60117dd268aebaec23de313/play-services-nearby-16.0.0/AndroidManifest.xml:2:1-11:12
@@ -39,20 +39,20 @@ MERGED from [com.android.support:interpolator:28.0.0] /home/brenzi/.gradle/cache
 MERGED from [android.arch.lifecycle:livedata:1.1.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/b5f1a18436322a4d6243b4d563cfece4/livedata-1.1.1/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:livedata-core:1.1.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/6104c576404b17797d5f42ae60105d1d/livedata-core-1.1.1/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/7c5e711cb7599bc18a19cc1df98bc8d6/runtime-1.1.1/AndroidManifest.xml:17:1-22:12
-INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
-INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
-INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
+INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
+INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
 	package
 		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:3:5-35
 		INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
 		INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
 		INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-36:12
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:1-32:12
 		INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:2:11-69
@@ -81,7 +81,7 @@ ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/s
 	android:name
 		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:11:22-64
 application
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:13:5-34:19
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:14:5-30:19
 MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/d1578515cd5b318a0b7df954f50ea1c1/constraint-layout-2.0.0-beta1/AndroidManifest.xml:9:5-20
 MERGED from [com.android.support.constraint:constraint-layout:2.0.0-beta1] /home/brenzi/.gradle/caches/transforms-2/files-2.1/d1578515cd5b318a0b7df954f50ea1c1/constraint-layout-2.0.0-beta1/AndroidManifest.xml:9:5-20
 MERGED from [com.google.android.gms:play-services-nearby:16.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/02a1a617e60117dd268aebaec23de313/play-services-nearby-16.0.0/AndroidManifest.xml:9:5-20
@@ -101,47 +101,39 @@ MERGED from [com.android.support:versionedparcelable:28.0.0] /home/brenzi/.gradl
 	android:appComponentFactory
 		ADDED from [com.android.support:support-compat:28.0.0] /home/brenzi/.gradle/caches/transforms-2/files-2.1/dd1cf78f22bdd94f550130b281f27c97/support-compat-28.0.0/AndroidManifest.xml:22:18-91
 	android:supportsRtl
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:18:9-35
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:19:9-35
 	android:label
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:16:9-41
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:17:9-41
 	android:roundIcon
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:17:9-54
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:18:9-54
 	android:icon
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:15:9-43
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:16:9-43
 	android:allowBackup
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:14:9-35
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:15:9-35
 	android:theme
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:19:9-40
-service#com.encointer.signer.EncointerChain
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:20:9-23:47
-	android:enabled
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:22:13-35
-	android:exported
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:23:13-36
-	android:name
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:21:13-43
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:20:9-40
 activity#com.encointer.signer.DeviceList
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:25:9-48
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:21:9-48
 	android:name
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:25:19-45
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:21:19-45
 activity#com.encointer.signer.PersonCounter
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:26:9-51
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:22:9-51
 	android:name
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:26:19-48
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:22:19-48
 activity#com.encointer.signer.EncointerActivity
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:27:9-33:20
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:23:9-29:20
 	android:name
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:27:19-52
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:23:19-52
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:28:13-32:29
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:24:13-28:29
 action#android.intent.action.MAIN
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:29:17-69
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:25:17-69
 	android:name
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:29:25-66
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:25:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:31:17-77
+ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:27:17-77
 	android:name
-		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:31:27-74
+		ADDED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml:27:27-74
 uses-sdk
 INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/brenzi/StudioProjects/encointer-app/encointer_android_app/app/src/main/AndroidManifest.xml

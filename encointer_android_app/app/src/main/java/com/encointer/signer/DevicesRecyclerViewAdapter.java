@@ -2,6 +2,7 @@ package com.encointer.signer;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,21 @@ import java.util.Map;
 
 public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecyclerViewAdapter.ViewHolder> {
 
-    private List<DeviceItem> devices;
+    private Map<String, DeviceItem> devices;
+    //private List<DeviceItem> devices;
     private Context parentContext;
     private String TAG;
 
+    // allows to access HashMap with a position
+    private DeviceItem get_position(int position) {
+        ArrayList<String> keys = new ArrayList<String>(this.devices.keySet());
+        return this.devices.get(keys.get(position));
+    }
+
     public DevicesRecyclerViewAdapter(Map<String, DeviceItem> devices, Context context, String TAG) {
-        this.devices = new ArrayList(devices.values());
+        //List<DeviceItem> tempList = new ArrayList<DeviceItem>(devices.values());
+        this.devices = devices;
+        //this.devices = new ArrayList<DeviceItem>(devices.values());
         this.TAG = TAG;
         this.parentContext = context;
     }
@@ -52,6 +62,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public DevicesRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.i(TAG, "onCreateViewHolder called");
         LayoutInflater inflater = LayoutInflater.from(parentContext);
         View v = inflater.inflate(R.layout.recycler_view_item, parent, false);
         return new ViewHolder(v);
@@ -59,7 +70,8 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final DeviceItem device = devices.get(position);
+        Log.i(TAG, "onBindViwHolder called with position %d" + position);
+        final DeviceItem device = get_position(position);
         holder.textView1.setText(String.format("%s (%s)", device.getEndpointName(), device.getEndpointId()));
 
         String connection = device.getAuthenticationToken();
@@ -94,9 +106,10 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(parentContext, "Connecting to " + devices.get(position).getEndpointId(), Toast.LENGTH_SHORT);
+                DeviceItem item = get_position(position);
+                Toast toast = Toast.makeText(parentContext, "Connecting to " + item.getEndpointId(), Toast.LENGTH_SHORT);
                 toast.show();
-                ((DeviceList)parentContext).establishConnection(devices.get(position).getEndpointId());
+                ((DeviceList)parentContext).establishConnection(item.getEndpointId());
             }
         });
     }
