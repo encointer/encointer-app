@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,6 +60,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class DeviceList extends AppCompatActivity {
 
@@ -82,6 +84,7 @@ public class DeviceList extends AppCompatActivity {
     private ConnectionsClient connectionsClient; // Our handle to Nearby Connections
     private AdvertisingOptions advertisingOption ;
     private DiscoveryOptions discoveryOption;
+    private Handler mHandler;
 
     private String test;
 
@@ -105,14 +108,14 @@ public class DeviceList extends AppCompatActivity {
                     if(info.getServiceId().equals("com.encointer.signer")) {
                         if (devices.containsKey(endpointId)) {
                             //we merely rediscovered an endpoint we already know
-                            Log.i(TAG, "onEndpointFound: rediscovered endpoint we already knowend: " + info.getEndpointName() + "(id: " + endpointId + ")");
+                            Log.i(TAG, "onEndpointFound: rediscovered endpoint we already know: " + info.getEndpointName() + "(id: " + endpointId + ")");
                         } else {
                             Log.i(TAG, "onEndpointFound: discovered new endpoint: " + info.getEndpointName() + "(id: " + endpointId + ")");
                             devices.put(endpointId, new DeviceItem(endpointId, info.getEndpointName(), info.getServiceId()));
                             updateFoundConnections();
                             mAdapter.notifyDataSetChanged();
                         }
-                        establishConnection(endpointId);
+                        //establishConnection(endpointId);
                     }
                 }
 
@@ -285,7 +288,9 @@ public class DeviceList extends AppCompatActivity {
         discoveryOption = new DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build();
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption); // Start advertising
         connectionsClient.startDiscovery("com.encointer.signer", endpointDiscoveryCallback, discoveryOption); // Start discovering
-
+        //manages retries
+        mHandler = new Handler();
+        Log.i(TAG,"my instanceId is " + connectionsClient.getInstanceId());
         // Set up list of available devices
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_device_list);
         layoutManager = new LinearLayoutManager(this);
@@ -306,9 +311,11 @@ public class DeviceList extends AppCompatActivity {
                 if (isChecked) {
                     Log.i(TAG,"start advertising my nearby id");
                     connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
+                    connectionsClient.startDiscovery("com.encointer.signer", endpointDiscoveryCallback, discoveryOption); // Start discovering
                 } else {
                     Log.i(TAG,"stop advertising my nearby id");
                     connectionsClient.stopAdvertising();
+                    connectionsClient.stopDiscovery();
                 }
             }
         });
@@ -318,13 +325,12 @@ public class DeviceList extends AppCompatActivity {
     protected void onResume() {
         Log.d(TAG, "lifecycle onResume()");
         super.onResume();
+        Log.i(TAG, "turning off WiFi to get better nearby connections");
+        wifiManager.setWifiEnabled(false);
         // Start advertising
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
         // Start discovering
         connectionsClient.startDiscovery("com.encointer.signer",endpointDiscoveryCallback, discoveryOption);
-        Log.i(TAG, "turning off WiFi to get better nearby connections");
-        wifiManager.setWifiEnabled(false);
-
     }
 
     /* unregister the broadcast receiver */
@@ -390,6 +396,7 @@ public class DeviceList extends AppCompatActivity {
         if (foundDevices >= PERSON_COUNTER) {
             Log.i(TAG,"stop advertising my nearby id");
             connectionsClient.stopAdvertising();
+            connectionsClient.stopDiscovery();
             ((Switch) findViewById(R.id.switch_advertising)).setChecked(false);
         }
     }
@@ -478,11 +485,22 @@ public class DeviceList extends AppCompatActivity {
                         (Void unused) -> {
                             // We successfully requested a connection. Now both sides
                             // must accept before the connection is established.
+                            Log.i(TAG, "Connection to " + endpointId + " success. need to accept.");
                         })
                 .addOnFailureListener(
                         (Exception e) -> {
                             // Nearby Connections failed to request the connection.
-                            Log.i(TAG, "Connection to " + endpointId + " failed");
+                            Log.i(TAG, "Connection to " + endpointId + " failed with: ", e);
+                            Toast toast = Toast.makeText(DeviceList.this, "establishConnection to " + endpointId + " failed", Toast.LENGTH_LONG);
+                            toast.show();
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast toast = Toast.makeText(DeviceList.this, "retrying connection to " + endpointId, Toast.LENGTH_LONG);
+                                    toast.show();
+                                    establishConnection(endpointId);
+                                }
+                            }, (new Random()).nextInt(1000) + 300 );
                         });
     }
 

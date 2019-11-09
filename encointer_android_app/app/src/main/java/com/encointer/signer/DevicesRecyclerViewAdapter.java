@@ -62,7 +62,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public DevicesRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.i(TAG, "onCreateViewHolder called");
+        Log.d(TAG, "onCreateViewHolder called");
         LayoutInflater inflater = LayoutInflater.from(parentContext);
         View v = inflater.inflate(R.layout.recycler_view_item, parent, false);
         return new ViewHolder(v);
@@ -70,7 +70,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Log.i(TAG, "onBindViwHolder called with position %d" + position);
+        Log.d(TAG, "onBindViwHolder called with position %d" + position);
         final DeviceItem device = get_position(position);
         holder.textView1.setText(String.format("%s (%s)", device.getEndpointName(), device.getEndpointId()));
 
