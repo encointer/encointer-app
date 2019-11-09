@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.nearby.Nearby;
@@ -298,7 +300,18 @@ public class DeviceList extends AppCompatActivity {
              }
         });
         Log.i(TAG, "onCreate: complete");
-
+        ((Switch) findViewById(R.id.switch_advertising))
+            .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.i(TAG,"start advertising my nearby id");
+                    connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
+                } else {
+                    Log.i(TAG,"stop advertising my nearby id");
+                    connectionsClient.stopAdvertising();
+                }
+            }
+        });
     }
 
     @Override
@@ -374,6 +387,11 @@ public class DeviceList extends AppCompatActivity {
         TextView textView = findViewById(R.id.textView_devices_found);
         String counter = "Devices found: " + foundDevices.toString() + "/" + PERSON_COUNTER.toString();
         textView.setText(counter);
+        if (foundDevices >= PERSON_COUNTER) {
+            Log.i(TAG,"stop advertising my nearby id");
+            connectionsClient.stopAdvertising();
+            ((Switch) findViewById(R.id.switch_advertising)).setChecked(false);
+        }
     }
 
 

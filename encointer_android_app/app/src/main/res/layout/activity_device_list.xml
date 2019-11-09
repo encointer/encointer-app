@@ -27,6 +27,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Switch
+        android:id="@+id/switch_advertising"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:text="Advertising "
+        android:checked="true"
+        app:layout_constraintStart_toStartOf="@+id/textView_devices_challenged"
+        app:layout_constraintTop_toBottomOf="@+id/textView_devices_challenged"
+        />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_device_list"
         android:layout_width="0dp"
@@ -38,8 +50,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView_devices_challenged"
-        app:layout_constraintTop_toBottomOf="@+id/textView_devices_challenged"
+        app:layout_constraintStart_toStartOf="@+id/switch_advertising"
+        app:layout_constraintTop_toBottomOf="@+id/switch_advertising"
         app:layout_constraintVertical_bias="1.0"
         tools:itemCount="12"
         tools:listitem="@layout/recycler_view_item" />
@@ -63,7 +75,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="done"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewUser"
+        app:layout_constraintStart_toStartOf="@+id/imageViewUser"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewUser"
         tools:layout_editor_absoluteY="23dp" />
+
+
 
 </android.support.constraint.ConstraintLayout>
