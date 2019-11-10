@@ -72,6 +72,8 @@ public class DeviceList extends AppCompatActivity {
 
     private static final byte PAYLOAD_CLAIM = 1;
     private static final byte PAYLOAD_SIGNATURE = 2;
+    private static final byte PAYLOAD_STATUS = 3;
+    private static final byte STATUS_DONE = 1;
 
     private Integer PERSON_COUNTER;
     private String USERNAME;
@@ -87,7 +89,11 @@ public class DeviceList extends AppCompatActivity {
     private AdvertisingOptions advertisingOption ;
     private DiscoveryOptions discoveryOption;
     private Handler mHandler;
-    private boolean retry = true;
+
+    private boolean retry = false;
+    private boolean manageRetry = false;
+    private boolean manageWifiOff = false;
+
     private Vibrator vib;
     private String test;
 
@@ -205,7 +211,7 @@ public class DeviceList extends AppCompatActivity {
                 public void onPayloadReceived(String endpointId, Payload payload) {
                     if(payload.asBytes() != null) {
                         byte [] payloadBytes = payload.asBytes();
-                        if (payloadBytes.length > 2) {
+                        if (payloadBytes.length > 1) {
                             DeviceItem item = devices.get(endpointId);
                             switch (payloadBytes[0]) {
                                 case PAYLOAD_CLAIM:
@@ -228,9 +234,32 @@ public class DeviceList extends AppCompatActivity {
                                         devices.put(endpointId, item);
                                         mAdapter.notifyDataSetChanged();
                                         updateSignaturesCounter();
+                                        //send STATUS
+                                        byte [] msg = {PAYLOAD_STATUS, STATUS_DONE};
+                                        connectionsClient.sendPayload(endpointId, Payload.fromBytes(msg));
                                     }
                                     catch (UnsupportedEncodingException e ) { e.printStackTrace();}
                                     break;
+                                case PAYLOAD_STATUS:
+                                    if (payloadBytes[1] == STATUS_DONE) {
+                                        Log.i(TAG, "onPayloadReceived: our endpoint is done: "+ endpointId);
+                                        item.setDone(true);
+                                        if (item.hasSignature()) {
+                                            Log.i(TAG, "onPayloadReceived: we are done too. closing connection");
+                                            connectionsClient.disconnectFromEndpoint(endpointId);
+                                        }
+                                    }
+                                    try {
+                                        String endpointSignature = new String(stripPayload(payloadBytes), "UTF-8");
+                                        Log.i(TAG, "onPayloadReceived: signature received from " + endpointId + ": "+ endpointSignature);
+                                        item.setSignature(endpointSignature);
+                                        devices.put(endpointId, item);
+                                        mAdapter.notifyDataSetChanged();
+                                        updateSignaturesCounter();
+                                    }
+                                    catch (UnsupportedEncodingException e ) { e.printStackTrace();}
+                                    break;
+
                                 default:
                                     Log.w(TAG,"onPayloadReceived: failed to identify payload by first byte");
                             }
@@ -291,8 +320,8 @@ public class DeviceList extends AppCompatActivity {
 
         // Set up android nearby service
         connectionsClient = Nearby.getConnectionsClient(this);
-        advertisingOption = new AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build();
-        discoveryOption = new DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build();
+        advertisingOption = new AdvertisingOptions.Builder().setStrategy(Strategy.P2P_POINT_TO_POINT).build();
+        discoveryOption = new DiscoveryOptions.Builder().setStrategy(Strategy.P2P_POINT_TO_POINT).build();
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption); // Start advertising
         connectionsClient.startDiscovery("com.encointer.signer", endpointDiscoveryCallback, discoveryOption); // Start discovering
         //manages retries
@@ -333,12 +362,16 @@ public class DeviceList extends AppCompatActivity {
         Log.d(TAG, "lifecycle onResume()");
         super.onResume();
         Log.i(TAG, "turning off WiFi to get better nearby connections");
-        wifiManager.setWifiEnabled(false);
+        if (manageWifiOff) {
+            wifiManager.setWifiEnabled(false);
+        }
         // Start advertising
         connectionsClient.startAdvertising(USERNAME, "com.encointer.signer", connectionLifecycleCallback, advertisingOption);
         // Start discovering
         connectionsClient.startDiscovery("com.encointer.signer",endpointDiscoveryCallback, discoveryOption);
-        retry = true;
+        if (manageRetry) {
+            retry = true;
+        }
     }
 
     /* unregister the broadcast receiver */
@@ -349,7 +382,7 @@ public class DeviceList extends AppCompatActivity {
         connectionsClient.stopAllEndpoints();
         connectionsClient.stopAdvertising();
         connectionsClient.stopDiscovery();
-        if (wifiTurnOnAtExit) {
+        if (wifiTurnOnAtExit && manageWifiOff) {
             wifiManager.setWifiEnabled(true);
         }
         retry = false;
@@ -403,7 +436,7 @@ public class DeviceList extends AppCompatActivity {
         TextView textView = findViewById(R.id.textView_devices_found);
         String counter = "Devices found: " + foundDevices.toString() + "/" + PERSON_COUNTER.toString();
         textView.setText(counter);
-        if (foundDevices >= PERSON_COUNTER) {
+        if (false) {//(foundDevices >= PERSON_COUNTER) {
             Log.i(TAG,"stop advertising my nearby id");
             connectionsClient.stopAdvertising();
             connectionsClient.stopDiscovery();
@@ -514,6 +547,9 @@ public class DeviceList extends AppCompatActivity {
                                 }, (new Random()).nextInt(1000) + 300);
                             }
                         });
+        DeviceItem item = devices.get(endpointId);
+        item.setConnected(false);
+        devices.put(endpointId, item);
     }
 
     public void sendSignature(String endpointId) throws NoSuchAlgorithmException, InvalidKeyException {

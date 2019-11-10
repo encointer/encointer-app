@@ -15,6 +15,7 @@ public class DeviceItem {
     private boolean isConnected;
     private String signature = "";
     private String claim = "";
+    private boolean isDone = false;
 
     public DeviceItem(String endpointId, String endpointName, String serviceId) {
         this.endpointId = endpointId;
@@ -76,6 +77,14 @@ public class DeviceItem {
 
     public void setConnected(boolean connected) {
         this.isConnected = connected;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean done) {
+        this.isDone = done;
     }
 
     public String getEndpointName() {
