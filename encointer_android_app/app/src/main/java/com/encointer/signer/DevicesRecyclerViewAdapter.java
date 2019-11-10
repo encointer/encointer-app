@@ -89,7 +89,7 @@ public class DevicesRecyclerViewAdapter extends RecyclerView.Adapter<DevicesRecy
             status += "got sign ";
         }
         holder.textView3.setText(status);
-        if (device.hasClaim() && device.hasSignature()) {
+        if (device.hasClaim() && device.hasSignature() && device.isDone()) {
             holder.textView3.setBackgroundColor(parentContext.getResources().getColor(android.R.color.holo_green_dark));
         }
         holder.imageView1.setImageBitmap(device.getIdPicture());

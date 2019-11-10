@@ -249,15 +249,6 @@ public class DeviceList extends AppCompatActivity {
                                             connectionsClient.disconnectFromEndpoint(endpointId);
                                         }
                                     }
-                                    try {
-                                        String endpointSignature = new String(stripPayload(payloadBytes), "UTF-8");
-                                        Log.i(TAG, "onPayloadReceived: signature received from " + endpointId + ": "+ endpointSignature);
-                                        item.setSignature(endpointSignature);
-                                        devices.put(endpointId, item);
-                                        mAdapter.notifyDataSetChanged();
-                                        updateSignaturesCounter();
-                                    }
-                                    catch (UnsupportedEncodingException e ) { e.printStackTrace();}
                                     break;
 
                                 default:
@@ -413,8 +404,14 @@ public class DeviceList extends AppCompatActivity {
             for (DeviceItem item : devices.values()) {
                 Log.d(TAG,"finalizeMeetup(): checking " + item.getEndpointName());
                 if (item.hasSignature()) {
-                    Log.d(TAG,"finalizeMeetup(): adding " + item.getEndpointName() + " witness " + item.getSignature());
-                    witnesses.put(item.getSignature());
+                    String sig = item.getSignature();
+                    if (sig.length() > 1) {
+                        Log.d(TAG,"finalizeMeetup(): adding " + item.getEndpointName() + " witness: " + item.getSignature());
+                        witnesses.put(item.getSignature());
+                    } else {
+                        Log.e(TAG,"finalizeMeetup(): bad signature from " + item.getEndpointName() + " witness: " + item.getSignature());
+                    }
+
                 }
             }
             args.put("witnesses", witnesses);
