@@ -246,7 +246,10 @@ public class DeviceList extends AppCompatActivity {
                                         item.setDone(true);
                                         if (item.hasSignature()) {
                                             Log.i(TAG, "onPayloadReceived: we are done too. closing connection");
-                                            connectionsClient.disconnectFromEndpoint(endpointId);
+                                            connectionsClient. disconnectFromEndpoint(endpointId);
+                                            item.setConnected(false);
+                                            devices.put(endpointId, item);
+                                            mAdapter.notifyDataSetChanged();
                                         }
                                     }
                                     break;

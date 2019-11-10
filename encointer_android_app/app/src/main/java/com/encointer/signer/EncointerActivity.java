@@ -126,7 +126,7 @@ public class EncointerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (sharedPref.contains("meetup_result")) {
-            sharedPref.edit().remove("meetup_result").apply();// TODO:delete this
+            //sharedPref.edit().remove("meetup_result").apply();// TODO:delete this
             try {
                 JSONObject json = new JSONObject(sharedPref.getString("meetup_result", ""));
                 witnessesJson = json.getJSONArray("witnesses");
