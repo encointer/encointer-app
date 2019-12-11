@@ -52,18 +52,57 @@ mobile phone app for encointer ceremonies and wallet
 1. If needed, sync Gradle file
 1. Build
 1. Run on Android device (simulator does not work with Android Nearby)
-
+```
 
 ## Demo
 ### run node
 Somewhere in your local WiFi accessible network, run
-```
-substrate --dev --ws-external
-```
-We'll assume your node's IP is 192.168.1.4
 
-### send extrinsic from app
-...TODO
+```
+encointer-node --dev --ws-external
+```
+(build the node as described [here](https://github.com/encointer/encointer-node))
+
+Then you should see blocks produced in the console and you should be able to observe the block number increasing in the app
+
+Now you should send funds to your account. Copy paste your account by long-tapping on it in the app.
+```
+encointer-node/client> cargo build --release
+encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 transfer //Alice 5GziKpBELV7fuYNy7quQfWGgVARn8onchS86azuPQkFj9nEZ 1000000
+```
+replace the account string with yours.
+
+Now you should be able to register for the demo ceremony in the app.
+
+Verify registration with 
+
+```
+encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_participant_registry
+```
+
+You will have to register at least 3 accounts for the next steps to work. Then you can progress the ceremony phase as root
+
+```
+encointer-node/client> ./encointer-client 127.0.0.1:9944 next_phase
+```
+and check the meetup assignment registry
+
+```
+encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_meetup_registry
+```
+again, prograss the phase
+```
+encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_meetup_registry
+```
+now the button "start meetup" should be enabled in the app and you can perform a meetup where all phones/accounts sign each other. Once all the results have been finalized onchain (all done by the app), we can progress the phase once more
+```
+encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_meetup_registry
+```
+You should now see that your account balance has gone up by one ceremony reward. 
+
+
+
+
 
 
 ## Android Studio
