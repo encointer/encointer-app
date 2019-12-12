@@ -31,19 +31,17 @@ mobile phone app for encointer ceremonies and wallet
    ```
    export PATH=~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
    ```
+   
 <!---   cd ~/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/
    ln -s i686-linux-android16-clang i686-linux-android-clang
    ln -s armv7a-linux-androideabi16-clang arm-linux-androideabi-clang
    ln -s aarch64-linux-android21-clang aarch64-linux-android-clang
-
-   ```
    a. if you have trouble building in the next step because of missing gcc, you might find this additional workaround useful. (not sure if linking gcc to clang is legit, but there's no gcc in android anymore and the two are highly compatible)
-      ```
       ln -s i686-linux-android16-clang i686-linux-android-gcc
       ln -s armv7a-linux-androideabi16-clang arm-linux-androideabi-gcc
       ln -s aarch64-linux-android21-clang aarch64-linux-android-gcc
-      ```
 --->
+
 1. build native library
    ```
    ./build-native-libs.sh
@@ -52,7 +50,7 @@ mobile phone app for encointer ceremonies and wallet
 1. If needed, sync Gradle file
 1. Build
 1. Run on Android device (simulator does not work with Android Nearby)
-```
+
 
 ## Demo
 ### run node
@@ -91,13 +89,17 @@ and check the meetup assignment registry
 encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_meetup_registry
 ```
 again, prograss the phase
+
 ```
 encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_meetup_registry
 ```
+
 now the button "start meetup" should be enabled in the app and you can perform a meetup where all phones/accounts sign each other. Once all the results have been finalized onchain (all done by the app), we can progress the phase once more
+
 ```
 encointer-node/client> ./target/release/encointer-client 127.0.0.1:9944 list_meetup_registry
 ```
+
 You should now see that your account balance has gone up by one ceremony reward. 
 
 
