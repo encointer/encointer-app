@@ -31,11 +31,13 @@ use substrate_api_client::{
     Api,
     compose_extrinsic_offline,
     extrinsic, 
-    extrinsic::xt_primitives::{AccountId, UncheckedExtrinsicV3, 
+    extrinsic::xt_primitives::{UncheckedExtrinsicV4, 
         GenericExtra, SignedPayload, GenericAddress},
     rpc::json_req,
     utils::{storage_key_hash, storage_key_hash_double_map, hexstr_to_hash},
 };
+use sr_primitives::traits::{Verify, IdentifyAccount};
+use indices::address::Address;
 use codec::{Encode, Decode};
 use primitives::{
 	crypto::{set_default_ss58_version, Ss58AddressFormat, Ss58Codec},
@@ -46,7 +48,7 @@ use log::Level;
 use android_logger::Config;
 use oping::{Ping, PingResult};
 
-use encointer_node_runtime::{Call, EncointerCeremoniesCall, BalancesCall, 
+use encointer_node_runtime::{AccountId, Call, EncointerCeremoniesCall, BalancesCall, 
     Signature, Hash,
     encointer_ceremonies::{ClaimOfAttendance, Witness, CeremonyIndexType,
         MeetupIndexType}
@@ -76,6 +78,12 @@ macro_rules! parse_json_j { ( $obj:expr, $env:expr ) => {
             },
     }
 }} 
+
+type AccountPublic = <Signature as Verify>::Signer;
+
+fn get_accountid(pair: AccountKeyring) -> AccountId {
+    AccountPublic::from(pair.public()).into_account()
+}
 
 
 #[no_mangle]
@@ -136,7 +144,7 @@ pub unsafe extern fn Java_com_encointer_signer_DeviceList_newClaim(env: JNIEnv, 
     let n_participants = unwrap_or_return!(n_participants, env, "n participants is specified");
 
     let claim = ClaimOfAttendance::<AccountId> {
-		claimant_public: pair.public().into(),
+		claimant_public: AccountPublic::from(pair.public()).into_account(),
         ceremony_index: cindex,
         meetup_index: mindex,
         number_of_participants_confirmed: n_participants,
@@ -163,7 +171,7 @@ pub unsafe extern fn Java_com_encointer_signer_DeviceList_signClaim(env: JNIEnv,
     let witness = Witness { 
         claim: claim.clone(),
         signature: Signature::from(pair.sign(&claim.encode())),
-        public: pair.public().into(),
+        public: AccountPublic::from(pair.public()).into_account(),
 	};
     let output = env.new_string(hex::encode(witness.encode())).unwrap();
     output.into_inner()    
@@ -206,12 +214,12 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         }
         "subscribe_balance_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
-            let key = storage_key_hash("Balances", "FreeBalance", Some(AccountId::from(pair.public()).encode()));
+            let key = storage_key_hash("Balances", "FreeBalance", Some(AccountPublic::from(pair.public()).encode()));
             json_req::state_subscribe_storage_with_id(&key, id)
         }
         "subscribe_nonce_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
-            let key = storage_key_hash("System", "AccountNonce", Some(AccountId::from(pair.public()).encode()));
+            let key = storage_key_hash("System", "AccountNonce", Some(AccountPublic::from(pair.public()).encode()));
             json_req::state_subscribe_storage_with_id(&key, id)
         },
         "subscribe_ceremony_index" => {
@@ -225,7 +233,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
         "get_meetup_index_for" => {
             let pair = unwrap_or_return!(pair, env, "pair has to be specified");
             let cindex = unwrap_or_return!(cindex, env, "ceremony index has to be specified");
-            let key = storage_key_hash_double_map("EncointerCeremonies", "MeetupIndex", cindex.encode(), AccountId::from(pair.public()).encode());
+            let key = storage_key_hash_double_map("EncointerCeremonies", "MeetupIndex", cindex.encode(), AccountPublic::from(pair.public()).encode());
             json_req::state_get_storage_with_id(&key, id)
         },
         "get_runtime_version" => {
@@ -241,10 +249,11 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             let genesis_hash = unwrap_or_return!(genesis_hash, env, "genesis_hash has to be specified");
             let spec_version = unwrap_or_return!(spec_version, env, "spec_version has to be specified");
             let from = AccountKeyring::Alice.pair();
-            let to = AccountId::from(pair.public());
-            let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
+            let to = AccountPublic::from(pair.public());
+            let xt: UncheckedExtrinsicV4<_> = compose_extrinsic_offline!(
                 from,
-                Call::Balances(BalancesCall::transfer(to.clone().into(), 42)),
+                Call::Balances(BalancesCall::transfer(
+                    Address::Id(AccountPublic::from(to.clone()).into_account()), 42)),
                 nonce,
                 genesis_hash,
                 spec_version
@@ -256,7 +265,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             let nonce = unwrap_or_return!(nonce, env, "nonce has to be specified");
             let genesis_hash = unwrap_or_return!(genesis_hash, env, "genesis_hash has to be specified");
             let spec_version = unwrap_or_return!(spec_version, env, "spec_version has to be specified");
-            let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
+            let xt: UncheckedExtrinsicV4<_> = compose_extrinsic_offline!(
                 pair,
                 Call::EncointerCeremonies(EncointerCeremoniesCall::register_participant()),
                 nonce,
@@ -272,7 +281,7 @@ pub unsafe extern fn Java_com_encointer_signer_EncointerActivity_getJsonReq(env:
             let spec_version = unwrap_or_return!(spec_version, env, "spec_version has to be specified");
             let witnesses = unwrap_or_return!(witnesses, env, "witnesses has to be specified");
            
-            let xt: UncheckedExtrinsicV3<_, sr25519::Pair> = compose_extrinsic_offline!(
+            let xt: UncheckedExtrinsicV4<_> = compose_extrinsic_offline!(
                 pair,
                 Call::EncointerCeremonies(EncointerCeremoniesCall::register_witnesses(witnesses.clone())),
                 nonce,

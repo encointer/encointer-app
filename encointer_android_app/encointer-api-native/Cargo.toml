@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 jni = { version = "0.10.2", default-features = false }
-substrate-api-client = { git = "https://github.com/scs/substrate-api-client.git", branch = "brenzi-double-map"}
+substrate-api-client = { git = "https://github.com/scs/substrate-api-client.git", tag = "api-M1.5"}
 log = "0.4"
 oping = "0.3.3"
 #env_logger = "0.6"
@@ -34,21 +34,29 @@ version = "1.0.0"
 
 [dependencies.primitives]
 git = 'https://github.com/paritytech/substrate'
-rev = 'f17d023bbe179f15678ac9989f471c9b18917e17'
+rev = '3bf9540e72df5ecb3955845764dfee7dcdbb26b5'
 package = "substrate-primitives"
+
+[dependencies.sr-primitives]
+default-features = false
+git = "https://github.com/paritytech/substrate"
+package = "sr-primitives"
+rev = "3bf9540e72df5ecb3955845764dfee7dcdbb26b5"
+
+[dependencies.indices]
+default-features = false
+git = "https://github.com/paritytech/substrate"
+package = "pallet-indices"
+rev = "3bf9540e72df5ecb3955845764dfee7dcdbb26b5"
 
 [dependencies.encointer-node-runtime]
 git = 'https://github.com/encointer/encointer-node'
-branch = "PoC1"
 package = "encointer-node-runtime"
 
 [dependencies.keyring]
 git = 'https://github.com/paritytech/substrate'
-rev = 'f17d023bbe179f15678ac9989f471c9b18917e17'
+rev = '3bf9540e72df5ecb3955845764dfee7dcdbb26b5'
 package = "substrate-keyring"
-
-[patch."https://github.com/paritytech/substrate"]
-substrate-primitives = { package = "substrate-primitives", git = "https://github.com/scs/substrate-api-client", branch = "brenzi-double-map", default-features = false }
 
 [patch.crates-io]
 ed25519-dalek = { git = "https://github.com/scs/ed25519-dalek.git", branch = "no_std_sgx"}
